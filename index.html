@@ -1,0 +1,1241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#c01f6b">
+<meta name="description" content="Virtual practical lab for B.Pharm Physical Pharmaceutics I (BP306P)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Virtual Lab">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Virtual Pharmacy Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout concept: a lab-manual index. The hub reads like the manual's own index table
+   (Sr.No / experiment / topic); each experiment is a bench with tabs.
+   Accent is phenolphthalein pink, the colour every student is waiting to see at an end point. */
+:root {
+  --bg: #f1f5f6;
+  --surface: #ffffff;
+  --surface-2: #e8eff1;
+  --ink: #12262e;
+  --muted: #55696f;
+  --line: #d3dee1;
+  --accent: #c01f6b;
+  --accent-ink: #ffffff;
+  --accent-soft: #fbe3ee;
+  --teal: #0e6b70;
+  --teal-soft: #d9eeef;
+  --good: #1b7f55;
+  --good-soft: #dcf2e7;
+  --warn: #9a6200;
+  --warn-soft: #fbefd2;
+  --bad: #b3261e;
+  --bad-soft: #fbe0dd;
+  --glass: #9fb6bd;
+  --liquid: #7cc4c8;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b181e; --surface: #12262f; --surface-2: #19323d; --ink: #e5eff1; --muted: #8ea8b0;
+    --line: #25434f; --accent: #ff63a5; --accent-ink: #20060f; --accent-soft: #3a1a2a;
+    --teal: #55c4c9; --teal-soft: #14363b; --good: #4ad196; --good-soft: #123a2a;
+    --warn: #e8b04a; --warn-soft: #3a2d10; --bad: #ff8b82; --bad-soft: #3d1b19;
+    --glass: #4f6c76; --liquid: #3f9ea3; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b181e; --surface: #12262f; --surface-2: #19323d; --ink: #e5eff1; --muted: #8ea8b0;
+  --line: #25434f; --accent: #ff63a5; --accent-ink: #20060f; --accent-soft: #3a1a2a;
+  --teal: #55c4c9; --teal-soft: #14363b; --good: #4ad196; --good-soft: #123a2a;
+  --warn: #e8b04a; --warn-soft: #3a2d10; --bad: #ff8b82; --bad-soft: #3d1b19;
+  --glass: #4f6c76; --liquid: #3f9ea3; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+.wrap { max-width: 1040px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.7rem, 4.5vw, 2.6rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.3rem; font-weight: 650; }
+h3 { font-size: 1.05rem; font-weight: 650; }
+p { margin: 0 0 .7em; max-width: 68ch; }
+a { color: var(--teal); }
+small, .muted { color: var(--muted); }
+.mono, td.num, .num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* top bar */
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.bar .brand { font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; flex: 1 1 auto; min-width: 0; }
+.bar .brand span { color: var(--muted); font-weight: 500; }
+.btn { appearance: none; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 14px; cursor: pointer; min-height: 40px; }
+.btn:hover { border-color: var(--teal); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.btn.small { padding: 4px 10px; min-height: 32px; font-size: .9rem; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+
+/* hub */
+.hero { padding: 28px 0 18px; display: grid; gap: 10px; }
+.hero .code { font-family: var(--f-mono); font-size: .85rem; color: var(--accent); letter-spacing: .08em; text-transform: uppercase; }
+.hero p { color: var(--muted); }
+.student { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; margin: 6px 0 22px; }
+.student label { display: grid; gap: 4px; font-size: .8rem; color: var(--muted); flex: 1 1 160px; min-width: 0; }
+.student input { border: 1px solid var(--line); background: var(--bg); border-radius: 6px; padding: 8px 10px; min-width: 0; width: 100%; }
+.index { border-top: 2px solid var(--ink); }
+.row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 6px 16px; align-items: center; padding: 14px 4px; border-bottom: 1px solid var(--line); text-decoration: none; color: inherit; cursor: pointer; }
+.row:hover { background: var(--surface); }
+.row .no { font-family: var(--f-mono); font-size: 1.5rem; font-weight: 600; color: var(--teal); }
+.row .ttl { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.row .sub { color: var(--muted); font-size: .92rem; }
+.row .go { color: var(--accent); font-weight: 600; white-space: nowrap; }
+.chip { display: inline-block; font-size: .75rem; padding: 2px 8px; border-radius: 99px; background: var(--teal-soft); color: var(--teal); margin-right: 6px; }
+.chip.done { background: var(--good-soft); color: var(--good); }
+@media (max-width: 560px) { .row { grid-template-columns: 40px minmax(0, 1fr); } .row .go { grid-column: 2; } }
+
+/* experiment shell */
+.exp-head { padding: 18px 0 10px; display: grid; gap: 6px; }
+.crumb { font-size: .9rem; }
+.aim { color: var(--muted); }
+.tabs { display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--line); position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 5; padding-top: 4px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.tab { appearance: none; border: 0; background: none; padding: 10px 14px; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; color: var(--muted); font-weight: 600; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.panel { padding: 20px 0; display: grid; gap: 18px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0; }
+.card > h3 { margin-bottom: 8px; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+ul.plain { margin: 0; padding-left: 1.1em; } ul.plain li { margin: 2px 0; }
+ol.steps { margin: 0; padding-left: 1.3em; } ol.steps li { margin: 6px 0; }
+.eq { font-family: var(--f-mono); background: var(--surface-2); padding: 8px 12px; border-radius: 6px; overflow-x: auto; margin: 8px 0; font-size: .92rem; }
+.note { padding: 10px 12px; border-radius: 8px; background: var(--warn-soft); color: var(--ink); border-left: 4px solid var(--warn); font-size: .92rem; }
+.tip { padding: 10px 12px; border-radius: 8px; background: var(--teal-soft); border-left: 4px solid var(--teal); font-size: .92rem; }
+.ok { color: var(--good); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; } .warn { color: var(--warn); font-weight: 600; }
+
+/* tables */
+.tw { overflow-x: auto; }
+table.obs { border-collapse: collapse; width: 100%; font-size: .9rem; }
+table.obs th, table.obs td { border: 1px solid var(--line); padding: 6px 8px; text-align: right; white-space: nowrap; }
+table.obs th { background: var(--surface-2); font-weight: 600; text-align: center; }
+table.obs td:first-child, table.obs th:first-child { text-align: left; }
+table.obs tr.hl td { background: var(--accent-soft); }
+
+/* bench widgets */
+.bench { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: start; }
+.stepper { display: grid; gap: 8px; }
+.step { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.step.done { border-color: var(--good); background: var(--good-soft); }
+.step .t { flex: 1 1 200px; min-width: 0; }
+.row-inputs { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.row-inputs label { display: grid; gap: 3px; font-size: .8rem; color: var(--muted); }
+.row-inputs input, .row-inputs select, .inp { border: 1px solid var(--line); background: var(--bg); border-radius: 6px; padding: 7px 9px; min-width: 0; width: 100%; max-width: 160px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg .btn[aria-pressed="true"] { background: var(--teal); color: #fff; border-color: var(--teal); }
+.burette { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 420px) { .burette { grid-template-columns: 1fr; } }
+.readout { font-family: var(--f-mono); font-size: 1.5rem; font-weight: 600; }
+.readout small { font-size: .75rem; font-weight: 400; }
+.msg { min-height: 1.4em; font-size: .92rem; }
+svg { max-width: 100%; height: auto; }
+svg text { font-family: var(--f-body); fill: var(--muted); font-size: 11px; }
+svg .ax { stroke: var(--muted); stroke-width: 1; fill: none; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .lbl { fill: var(--ink); font-size: 12px; }
+.chart { width: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .85rem; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+.checkrow { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: end; padding: 10px; border: 1px dashed var(--line); border-radius: 8px; }
+.checkrow label { display: grid; gap: 3px; font-size: .85rem; flex: 1 1 200px; min-width: 0; }
+
+/* viva */
+details.q { border-bottom: 1px solid var(--line); padding: 8px 0; }
+details.q summary { cursor: pointer; font-weight: 600; }
+details.q div { padding: 6px 0 0 1.1em; color: var(--muted); }
+
+/* report */
+.paper { background: #fff; color: #111; border: 1px solid var(--line); border-radius: 4px; padding: clamp(14px, 4vw, 32px); font-family: Georgia, "Times New Roman", serif; line-height: 1.5; }
+.paper h2 { font-family: Georgia, serif; text-align: center; font-size: 1.2rem; text-transform: uppercase; letter-spacing: .04em; }
+.paper h3 { font-family: Georgia, serif; font-size: 1rem; margin: 14px 0 4px; text-decoration: underline; }
+.paper table.obs th { background: #eee; color: #111; } .paper table.obs th, .paper table.obs td { border-color: #888; }
+.paper .meta { display: flex; flex-wrap: wrap; gap: 4px 24px; justify-content: space-between; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 10px; font-size: .95rem; }
+.paper svg text { fill: #333; } .paper .eq { background: #f1f1f1; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; z-index: 30; max-width: 90vw; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.drop { animation: fall .5s ease-in; } @keyframes fall { from { transform: translateY(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
+.liquid { transition: all .35s ease; }
+.btn { text-decoration: none; display: inline-block; color: var(--ink); }
+.btn.primary { color: var(--accent-ink); }
+.seg .btn[aria-pressed="true"] { color: #fff; }
+.burette > svg { max-width: 200px; justify-self: center; }
+@media (max-width: 520px) { .burette { grid-template-columns: 1fr !important; } }
+.credit { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; padding: 12px 14px; margin: 4px 0 12px; border-left: 4px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; font-size: .95rem; }
+.credit .lbl { font-family: var(--f-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<script>
+/* ===== Virtual Lab core: helpers, graph, fitting ===== */
+const VL = (() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  const $ = (s, r) => (r || document).querySelector(s);
+  function h(tag, attrs, ...kids) {
+    const svg = ['svg','g','path','line','rect','circle','text','polyline','polygon','defs','clipPath','ellipse'].includes(tag);
+    const e = svg ? document.createElementNS(NS, tag) : document.createElement(tag);
+    for (const k in (attrs || {})) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') e.setAttribute('class', v);
+      else if (k === 'html') e.innerHTML = v;
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else if (k === 'style' && typeof v === 'object') Object.assign(e.style, v);
+      else e.setAttribute(k, v === true ? '' : v);
+    }
+    kids.flat(9).forEach(c => { if (c == null || c === false) return; e.append(c.nodeType ? c : document.createTextNode(c)); });
+    return e;
+  }
+  const fmt = (x, d = 2) => (x === null || x === undefined || !isFinite(x)) ? '–' : Number(x).toFixed(d);
+  const sig = (x, n = 3) => (x === null || !isFinite(x)) ? '–' : Number(x).toPrecision(n);
+  function hash(str) { let a = 2166136261; for (let i = 0; i < str.length; i++) { a ^= str.charCodeAt(i); a = Math.imul(a, 16777619); } return a >>> 0; }
+  function mulberry(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function gauss(r) { let u = 0, v = 0; while (!u) u = r(); while (!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('vl:' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem('vl:' + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  function toast(msg) {
+    const t = h('div', { class: 'toast', role: 'status' }, msg);
+    document.body.append(t); setTimeout(() => t.remove(), 2200);
+  }
+  async function copyText(text, node) {
+    try { await navigator.clipboard.writeText(text); toast('Copied'); }
+    catch (e) {
+      if (node) { const r = document.createRange(); r.selectNodeContents(node); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+      toast('Select and copy the text');
+    }
+  }
+  function linfit(pts) {
+    const n = pts.length; if (n < 2) return { m: NaN, c: NaN, r2: NaN };
+    let sx = 0, sy = 0, sxx = 0, sxy = 0, syy = 0;
+    pts.forEach(([x, y]) => { sx += x; sy += y; sxx += x * x; sxy += x * y; syy += y * y; });
+    const d = n * sxx - sx * sx; if (!d) return { m: NaN, c: NaN, r2: NaN };
+    const m = (n * sxy - sx * sy) / d, c = (sy - m * sx) / n;
+    const ssr = pts.reduce((a, [x, y]) => a + (y - (m * x + c)) ** 2, 0);
+    const sst = syy - sy * sy / n;
+    return { m, c, r2: sst ? 1 - ssr / sst : 1 };
+  }
+  function bisect(f, lo, hi, it = 80) { let flo = f(lo); for (let i = 0; i < it; i++) { const mid = (lo + hi) / 2, fm = f(mid); if ((fm > 0) === (flo > 0)) { lo = mid; flo = fm; } else hi = mid; } return (lo + hi) / 2; }
+  function nice(min, max, n = 6) {
+    if (min === max) { max = min + 1; }
+    const span = max - min, raw = span / n, p = Math.pow(10, Math.floor(Math.log10(raw)));
+    const f = raw / p, step = (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
+    const lo = Math.floor(min / step) * step, hi = Math.ceil(max / step) * step, t = [];
+    for (let v = lo; v <= hi + step / 2; v += step) t.push(+v.toPrecision(10));
+    return { lo, hi, ticks: t };
+  }
+  const COLORS = ['var(--accent)', 'var(--teal)', 'var(--warn)', 'var(--good)'];
+
+  /* Scatter / line chart drawn to one scale.
+     opts: {xlabel, ylabel, series:[{name, pts, line, color, dashed}], lines:[{pts, color, dashed, name}], marks:[{x,y,label}], xmin,xmax,ymin,ymax, w,h} */
+  function graph(root, opts) {
+    const W = opts.w || 560, H = opts.h || 340, m = { l: 58, r: 18, t: 16, b: 48 };
+    const all = [];
+    (opts.series || []).forEach(s => s.pts.forEach(p => all.push(p)));
+    (opts.lines || []).forEach(s => s.pts.forEach(p => all.push(p)));
+    (opts.marks || []).forEach(k => all.push([k.x, k.y]));
+    const xs = all.map(p => p[0]).filter(isFinite), ys = all.map(p => p[1]).filter(isFinite);
+    if (!xs.length) { root.replaceChildren(h('p', { class: 'muted' }, 'The graph appears here once you record readings.')); return; }
+    const X = nice(opts.xmin ?? Math.min(...xs), opts.xmax ?? Math.max(...xs)), Y = nice(opts.ymin ?? Math.min(...ys), opts.ymax ?? Math.max(...ys));
+    const sx = v => m.l + (v - X.lo) / (X.hi - X.lo) * (W - m.l - m.r), sy = v => H - m.b - (v - Y.lo) / (Y.hi - Y.lo) * (H - m.t - m.b);
+    const svg = h('svg', { viewBox: `0 0 ${W} ${H}`, class: 'chart', role: 'img', 'aria-label': opts.title || 'graph' });
+    const dp = t => Math.abs(t) >= 100 || t === 0 ? 0 : Math.abs(t) >= 10 ? 1 : Math.abs(t) >= 1 ? 2 : 3;
+    Y.ticks.forEach(t => { svg.append(h('line', { class: 'grid', x1: m.l, x2: W - m.r, y1: sy(t), y2: sy(t) }), h('text', { x: m.l - 6, y: sy(t) + 4, 'text-anchor': 'end' }, +t.toPrecision(4))); });
+    X.ticks.forEach(t => { svg.append(h('line', { class: 'grid', y1: m.t, y2: H - m.b, x1: sx(t), x2: sx(t) }), h('text', { x: sx(t), y: H - m.b + 16, 'text-anchor': 'middle' }, +t.toPrecision(4))); });
+    svg.append(h('line', { class: 'ax', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }), h('line', { class: 'ax', x1: m.l, x2: m.l, y1: m.t, y2: H - m.b }));
+    svg.append(h('text', { class: 'lbl', x: (m.l + W - m.r) / 2, y: H - 8, 'text-anchor': 'middle' }, opts.xlabel || ''));
+    svg.append(h('text', { class: 'lbl', transform: `translate(14 ${(m.t + H - m.b) / 2}) rotate(-90)`, 'text-anchor': 'middle' }, opts.ylabel || ''));
+    (opts.lines || []).forEach((l, i) => svg.append(h('polyline', { points: l.pts.map(p => `${sx(p[0])},${sy(p[1])}`).join(' '), fill: 'none', style: `stroke:${l.color || 'var(--muted)'};stroke-width:1.8`, 'stroke-dasharray': l.dashed ? '6 4' : null })));
+    (opts.series || []).forEach((s, i) => {
+      const c = s.color || COLORS[i % COLORS.length];
+      if (s.line && s.pts.length > 1) svg.append(h('polyline', { points: s.pts.map(p => `${sx(p[0])},${sy(p[1])}`).join(' '), fill: 'none', style: `stroke:${c};stroke-width:2` }));
+      s.pts.forEach(p => svg.append(h('circle', { cx: sx(p[0]), cy: sy(p[1]), r: s.r || 4, style: `fill:${c};stroke:var(--surface);stroke-width:1.5` })));
+    });
+    (opts.marks || []).forEach(k => {
+      svg.append(h('circle', { cx: sx(k.x), cy: sy(k.y), r: 6, fill: 'none', style: 'stroke:var(--ink);stroke-width:2' }));
+      if (k.label) svg.append(h('text', { class: 'lbl', x: Math.min(sx(k.x) + 9, W - 120), y: Math.max(sy(k.y) - 9, 14) }, k.label));
+    });
+    const legend = h('div', { class: 'legend' }, [...(opts.series || []), ...(opts.lines || [])].filter(s => s.name).map((s, i) => h('span', {}, h('i', { style: { background: s.color || COLORS[i % COLORS.length] } }), s.name)));
+    root.replaceChildren(svg, legend);
+  }
+
+  return { $, h, fmt, sig, hash, mulberry, gauss, store, toast, copyText, linfit, bisect, nice, graph, COLORS, experiments: [], register(e) { this.experiments.push(e); } };
+})();
+
+/* ===== Virtual Lab core: burette, pH meter, tables, checks, viva ===== */
+(() => {
+  const { h, fmt } = VL;
+
+  /* Burette + flask. o: {title, onRecord(vol), max=50, tol=0.5}
+     setup({end, titrant, sample, indicator:{from,to,name,mode:'appear'|'vanish'}}) arms a new titration. */
+  VL.titration = function (root, o) {
+    const max = o.max || 50, tol = o.tol ?? 0.5;
+    let vol = 0, end = null, ind = null, recorded = false;
+    const PX = 4.6, TOP = 10;
+    const liq = h('rect', { x: 88, width: 24, class: 'liquid', style: 'fill:var(--liquid)' });
+    const flaskFrom = h('path', { d: 'M92 285 L92 305 L72 338 L128 338 L108 305 L108 285 Z', style: 'fill:var(--liquid);opacity:.35' });
+    const flaskTo = h('path', { d: 'M92 285 L92 305 L72 338 L128 338 L108 305 L108 285 Z', style: 'opacity:0', class: 'liquid' });
+    const drop = h('circle', { cx: 100, cy: 270, r: 3, style: 'fill:var(--liquid);opacity:0' });
+    const svg = h('svg', { viewBox: '0 0 200 350', role: 'img', 'aria-label': 'Burette and conical flask' });
+    svg.append(h('rect', { x: 88, y: TOP, width: 24, height: 50 * PX, rx: 2, fill: 'none', style: 'stroke:var(--glass);stroke-width:2' }), liq);
+    for (let ml = 0; ml <= 50; ml++) {
+      const y = TOP + ml * PX, major = ml % 5 === 0;
+      svg.append(h('line', { x1: major ? 76 : 82, x2: 88, y1: y, y2: y, style: 'stroke:var(--muted);stroke-width:1' }));
+      if (major) svg.append(h('text', { x: 72, y: y + 4, 'text-anchor': 'end' }, ml));
+    }
+    svg.append(h('rect', { x: 95, y: TOP + 50 * PX + 2, width: 10, height: 14, style: 'fill:var(--glass)' }), h('line', { x1: 100, x2: 100, y1: TOP + 50 * PX + 16, y2: 268, style: 'stroke:var(--glass);stroke-width:2' }), drop, flaskFrom, flaskTo,
+      h('path', { d: 'M92 285 L92 305 L72 338 L128 338 L108 305 L108 285', fill: 'none', style: 'stroke:var(--glass);stroke-width:2' }));
+    const read = h('div', { class: 'readout' }, '0.00', h('small', {}, ' ml'));
+    const msg = h('div', { class: 'msg', 'aria-live': 'polite' });
+    const info = h('div', { class: 'muted' });
+    const mk = (label, dv) => h('button', { class: 'btn', onclick: () => add(dv) }, label);
+    const recBtn = h('button', { class: 'btn primary', onclick: record }, 'Record end point');
+    const resetBtn = h('button', { class: 'btn', onclick: () => reset(true) }, 'Refill burette');
+    const card = h('div', { class: 'card' }, h('h3', {}, o.title || 'Titration'), info,
+      h('div', { class: 'burette' }, svg, h('div', { style: { display: 'grid', gap: '10px' } }, read, h('div', { class: 'seg' }, mk('+5', 5), mk('+1', 1), mk('+0.1', 0.1), mk('1 drop', 0.05)), h('div', { class: 'seg' }, recBtn, resetBtn), msg)));
+    root.append(card);
+    function paint() {
+      const y = TOP + Math.min(vol, 50) * PX;
+      liq.setAttribute('y', y); liq.setAttribute('height', 50 * PX - Math.min(vol, 50) * PX);
+      read.firstChild.nodeValue = fmt(vol, 2);
+      if (!ind) { flaskTo.style.opacity = 0; return; }
+      const t = Math.max(0, Math.min(1, (vol - (end - 0.15)) / 0.15));
+      const extra = vol > end ? Math.min(0.35, (vol - end) * 0.25) : 0;
+      if (ind.mode === 'vanish') { flaskFrom.style.fill = ind.from; flaskFrom.style.opacity = 0.95; flaskTo.style.fill = ind.to; flaskTo.style.opacity = t * 0.95; }
+      else { flaskFrom.style.fill = ind.from; flaskFrom.style.opacity = 0.35; flaskTo.style.fill = ind.to; flaskTo.style.opacity = t ? Math.min(1, 0.55 + extra + t * 0.1) : 0; }
+    }
+    function add(dv) {
+      if (!ind) { msg.className = 'msg warn'; msg.textContent = 'Prepare the sample in the flask first.'; return; }
+      if (recorded) { msg.className = 'msg warn'; msg.textContent = 'Already recorded. Refill the burette to repeat.'; return; }
+      if (vol + dv > max + 1e-9) { msg.className = 'msg warn'; msg.textContent = 'The burette is empty. Refill and start again.'; return; }
+      vol = Math.round((vol + dv) * 100) / 100; msg.textContent = '';
+      drop.style.opacity = 1; drop.classList.remove('drop'); void drop.getBoundingClientRect(); drop.classList.add('drop'); setTimeout(() => drop.style.opacity = 0, 500);
+      paint();
+    }
+    function record() {
+      if (!ind) { msg.className = 'msg warn'; msg.textContent = 'Prepare the sample in the flask first.'; return; }
+      if (recorded) return;
+      if (vol < end - 0.001) { msg.className = 'msg warn'; msg.textContent = 'The colour has not changed yet, so the end point is not reached. Keep adding titrant.'; return; }
+      const over = vol - end;
+      if (over > tol) { msg.className = 'msg bad'; msg.textContent = `Overshot by about ${fmt(over, 1)} ml. Refill the burette and repeat with drops near the end.`; return; }
+      recorded = true; msg.className = 'msg ok';
+      msg.textContent = over < 0.1 ? `Recorded ${fmt(vol, 2)} ml. Sharp end point.` : `Recorded ${fmt(vol, 2)} ml. Slight overshoot; use single drops near the end next time.`;
+      o.onRecord && o.onRecord(vol);
+    }
+    function reset(keepSample) {
+      vol = 0; recorded = false; msg.textContent = '';
+      if (!keepSample) { ind = null; end = null; info.textContent = 'Flask is empty.'; }
+      paint();
+    }
+    function setup(s) {
+      end = s.end; ind = Object.assign({ from: 'var(--liquid)', to: '#e0328f', mode: 'appear' }, s.indicator || {});
+      info.innerHTML = `Burette: <b>${s.titrant}</b>. Flask: ${s.sample}. End point: ${ind.name || 'colour change'}.`;
+      reset(true);
+    }
+    reset(false);
+    return { setup, reset: () => reset(false), el: card, get armed() { return !!ind; } };
+  };
+
+  /* pH meter. o:{offset} offset (pH units) applies until two-point calibration is done. */
+  VL.phmeter = function (root, o) {
+    const cal = new Set(); let calibrated = false;
+    const disp = h('div', { class: 'readout', style: { fontSize: '2rem' } }, '–.––');
+    const st = h('div', { class: 'msg warn' }, 'Not calibrated. Calibrate with at least two buffers before measuring.');
+    const mkb = (ph) => h('button', { class: 'btn', onclick: () => { cal.add(ph); calibrated = cal.size >= 2; st.className = 'msg ' + (calibrated ? 'ok' : 'warn'); st.textContent = calibrated ? 'Calibrated. Readings are reliable.' : `Buffer pH ${ph} done. One more buffer needed.`; } }, `Buffer pH ${ph}`);
+    root.append(h('div', { class: 'card' }, h('h3', {}, 'pH meter'), disp, h('div', { class: 'seg' }, mkb('4.00'), mkb('7.00'), mkb('9.40')), st));
+    const r = o.rnd || Math.random;
+    return {
+      get calibrated() { return calibrated; },
+      show(trueph) { const v = trueph + (calibrated ? 0 : (o.offset ?? 0.3)) + VL.gauss(r) * 0.01; disp.textContent = fmt(v, 2); return Math.round(v * 100) / 100; }
+    };
+  };
+
+  VL.table = function (cols, rows, o) {
+    o = o || {};
+    return h('div', { class: 'tw' }, h('table', { class: 'obs' }, h('thead', {}, h('tr', {}, cols.map(c => h('th', { html: c })))), h('tbody', {}, rows.map((r, i) => h('tr', { class: (o.hl && o.hl(i, r)) ? 'hl' : null }, r.map((c, j) => h('td', { class: j ? 'num' : null }, c)))))));
+  };
+
+  /* Student calculation check. o:{label, expected:()=>number|null, tol (relative, default .05), abs, unit, working:html} */
+  VL.check = function (o) {
+    const inp = h('input', { class: 'inp', type: 'number', step: 'any', 'aria-label': o.label });
+    const fb = h('div', { class: 'msg', 'aria-live': 'polite' });
+    const work = h('div', { class: 'eq', hidden: true, html: o.working || '' });
+    const go = () => {
+      const exp = o.expected(); if (exp == null || !isFinite(exp)) { fb.className = 'msg warn'; fb.textContent = 'Record all the readings first.'; return; }
+      const v = parseFloat(inp.value); if (!isFinite(v)) { fb.className = 'msg warn'; fb.textContent = 'Enter your calculated value.'; return; }
+      const err = o.abs != null ? Math.abs(v - exp) : Math.abs(v - exp) / Math.abs(exp), lim = o.abs != null ? o.abs : (o.tol ?? 0.05);
+      if (err <= lim) { fb.className = 'msg ok'; fb.textContent = `Correct. Expected about ${VL.sig(exp, 4)} ${o.unit || ''}.`; o.onPass && o.onPass(); }
+      else { fb.className = 'msg bad'; fb.textContent = `Not matching your readings. Check units and the formula, then try again.`; }
+    };
+    return h('div', {}, h('div', { class: 'checkrow' }, h('label', {}, o.label, inp), h('span', { class: 'muted' }, o.unit || ''), h('button', { class: 'btn', onclick: go }, 'Check'), h('button', { class: 'btn', onclick: () => { work.hidden = !work.hidden; } }, 'Show working')), fb, work);
+  };
+
+  VL.viva = function (sets) {
+    return h('div', { class: 'cols' }, Object.keys(sets).map(k => h('div', { class: 'card' }, h('h3', {}, 'Set ' + k), sets[k].map(([q, a], i) => h('details', { class: 'q' }, h('summary', {}, `${i + 1}. ${q}`), h('div', {}, a))))));
+  };
+})();
+
+/* ===== Virtual Lab shell: hub, tabs, report, routing ===== */
+(() => {
+  const { h, store } = VL;
+  const app = document.getElementById('app');
+  const student = Object.assign({ name: '', roll: '', batch: '' }, store.get('student', {}));
+  const doneSet = new Set(store.get('done', []));
+  let theme = store.get('theme', null);
+  const applyTheme = () => { if (theme) document.documentElement.setAttribute('data-theme', theme); else document.documentElement.removeAttribute('data-theme'); };
+  applyTheme();
+
+  function topBar(back) {
+    return h('div', { class: 'bar' },
+      back ? h('a', { href: '#', class: 'btn small', onclick: e => { e.preventDefault(); go(''); } }, '← All experiments') : null,
+      h('div', { class: 'brand' }, 'Virtual Pharmacy Lab ', h('span', {}, '· BP306P')),
+      h('button', { class: 'btn small', 'aria-label': 'Switch light and dark theme', onclick: () => {
+        const dark = theme ? theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        theme = dark ? 'light' : 'dark'; store.set('theme', theme); applyTheme(); } }, 'Light / Dark'));
+  }
+
+  function hub() {
+    const inp = (id, label, key, ph) => h('label', { for: id }, label, h('input', { id, value: student[key], placeholder: ph, oninput: e => { student[key] = e.target.value; store.set('student', student); } }));
+    const rows = VL.experiments.slice().sort((a, b) => a.no - b.no).map(e => h('a', { class: 'row', href: '#exp' + e.no, onclick: ev => { ev.preventDefault(); go('exp' + e.no); } },
+      h('div', { class: 'no' }, String(e.no).padStart(2, '0')),
+      h('div', {}, h('div', { class: 'ttl' }, e.title), h('div', { class: 'sub' }, e.sub), h('div', {}, e.topic.map(t => h('span', { class: 'chip' }, t)), doneSet.has(e.id) ? h('span', { class: 'chip done' }, 'Completed') : null)),
+      h('div', { class: 'go' }, 'Open lab →')));
+    app.replaceChildren(h('div', { class: 'wrap' }, topBar(false),
+      h('div', { class: 'hero' }, h('div', { class: 'code' }, 'B.Pharm · Semester III · Physical Pharmaceutics I'), h('h1', {}, 'Virtual practical lab'),
+        h('p', {}, 'Eleven experiments from the practical manual. Prepare the apparatus, run the titration or measurement, record readings, plot the graph, calculate the result and answer the viva questions. Every student gets slightly different readings, so results cannot be copied.')),
+      h('div', { class: 'credit' }, h('span', { class: 'lbl' }, 'Prepared by'), h('div', {}, h('b', {}, 'Mr. Ashish V. Jivrakh'), ', Assistant Professor', h('br'), 'Department of Pharmaceutics', h('br'), 'Shreeyash Institute of Pharmaceutical Education & Research (SYIPER)')),
+      h('div', { class: 'student' }, inp('s-name', 'Student name', 'name', 'Your name'), inp('s-roll', 'Roll number', 'roll', 'e.g. 23'), inp('s-batch', 'Batch / division', 'batch', 'e.g. B1')),
+      h('div', { class: 'index', role: 'list' }, rows)));
+  }
+
+  function experiment(e) {
+    const seed = VL.hash((student.name || 'guest') + '|' + (student.roll || '0') + '|' + e.id);
+    const rnd = VL.mulberry(seed);
+    const bench = h('div', { class: 'bench' }), results = h('div', { class: 'panel', style: { padding: 0 } });
+    const ctx = { seed, rnd, bench, results, student, data: {}, render: () => {}, reportFn: () => ({}), refresh() { if (tab === 'results') this.render(); }, done() { if (!doneSet.has(e.id)) { doneSet.add(e.id); store.set('done', [...doneSet]); VL.toast('Experiment marked complete'); } }, noise: sd => VL.gauss(rnd) * sd };
+    let tab = location.hash.split('-')[1] || 'overview';
+    const tabs = [['overview', 'Aim & theory'], ['bench', 'Virtual bench'], ['results', 'Results'], ['viva', 'Viva'], ['report', 'Report']];
+    const panelHost = h('div', { class: 'panel' });
+    const tabBar = h('div', { class: 'tabs', role: 'tablist' });
+    e.build(ctx);
+    const overview = () => h('div', { class: 'panel', style: { padding: 0 } },
+      h('div', { class: 'card' }, h('h3', {}, 'Introduction and principle'), h('div', { html: e.theory })),
+      h('div', { class: 'cols' }, h('div', { class: 'card' }, h('h3', {}, 'Chemicals'), h('ul', { class: 'plain' }, e.chemicals.map(c => h('li', {}, c)))), h('div', { class: 'card' }, h('h3', {}, 'Apparatus'), h('ul', { class: 'plain' }, e.apparatus.map(c => h('li', {}, c))))),
+      h('div', { class: 'card' }, h('h3', {}, 'Procedure'), h('ol', { class: 'steps' }, e.steps.map(s => h('li', { html: s })))),
+      e.reference ? h('p', { class: 'muted' }, 'Reference: ' + e.reference) : null,
+      h('div', {}, h('button', { class: 'btn primary', onclick: () => show('bench') }, 'Go to the virtual bench')));
+    function show(t) {
+      tab = t; history.replaceState(null, '', '#exp' + e.no + (t === 'overview' ? '' : '-' + t));
+      tabBar.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.t === t)));
+      if (t === 'overview') panelHost.replaceChildren(overview());
+      else if (t === 'bench') panelHost.replaceChildren(bench);
+      else if (t === 'results') { ctx.render(); panelHost.replaceChildren(results); }
+      else if (t === 'viva') panelHost.replaceChildren(VL.viva(e.viva));
+      else panelHost.replaceChildren(report());
+      window.scrollTo({ top: 0 });
+    }
+    function report() {
+      const r = ctx.reportFn() || {};
+      const sec = (t, c) => c ? [h('h3', {}, t), typeof c === 'string' ? h('div', { html: c }) : c] : [];
+      const paper = h('div', { class: 'paper', id: 'paper' },
+        h('h2', {}, `Experiment No. ${e.no}`),
+        h('div', { class: 'meta' }, h('span', {}, 'Name: ' + (student.name || '__________')), h('span', {}, 'Roll no: ' + (student.roll || '____')), h('span', {}, 'Batch: ' + (student.batch || '____')), h('span', {}, 'Date: ' + new Date().toLocaleDateString('en-GB'))),
+        h('p', {}, h('b', {}, 'Aim: '), e.aim),
+        sec('Requirements', h('p', {}, h('b', {}, 'Chemicals: '), e.chemicals.join('; ') + '. ', h('b', {}, 'Apparatus: '), e.apparatus.join('; ') + '.')),
+        sec('Procedure', h('ol', {}, e.steps.map(s => h('li', { html: s })))),
+        sec('Observations', r.obs), sec('Calculation', r.calc), sec('Result and conclusion', r.result || h('p', {}, 'Complete the bench work to generate the result.')),
+        h('p', { style: { marginTop: '28px' } }, 'Teacher’s sign: ______________'));
+      return h('div', { class: 'panel', style: { padding: 0 } }, h('div', { class: 'tip' }, 'This report fills in from your own readings. Copy the text into your record or share the screen with your teacher.'), paper, h('div', {}, h('button', { class: 'btn primary', onclick: () => VL.copyText(paper.innerText, paper) }, 'Copy report text')));
+    }
+    tabs.forEach(([k, label]) => tabBar.append(h('button', { class: 'tab', role: 'tab', 'data-t': k, onclick: () => show(k) }, label)));
+    app.replaceChildren(h('div', { class: 'wrap' }, topBar(true), h('div', { class: 'exp-head' }, h('div', { class: 'crumb muted mono' }, `Experiment ${e.no} of 11`), h('h1', {}, e.title), h('div', { class: 'aim' }, e.aim)), tabBar, panelHost));
+    show(tab);
+  }
+
+  function go(r) { location.hash = r ? '#' + r : ''; route(); }
+  function route() {
+    const m = /^#exp(\d+)/.exec(location.hash);
+    const e = m && VL.experiments.find(x => x.no === +m[1]);
+    if (e) experiment(e); else hub();
+    window.scrollTo({ top: 0 });
+  }
+  window.addEventListener('hashchange', () => { if (!/-/.test(location.hash) || !/^#exp/.test(location.hash)) route(); });
+  VL.start = route;
+})();
+
+
+/* Shared builder for the two distribution (partition coefficient) experiments */
+VL.partitionBuild = function (cfg) {
+  return function (ctx) {
+    const { h, fmt } = VL;
+    const tune = 1 + ctx.noise(0.015);
+    const sets = ctx.data.sets = cfg.sets.map((s, i) => {
+      const Vs = s.stock, Vo = s.stock + s.extra, Va = s.water, C0 = cfg.C0;
+      const total = C0 * Vs;
+      const K = cfg.K * tune;
+      const Corg = VL.bisect(c => c * Vo + cfg.caq(c, K) * Va - total, 0, total / Vo);
+      return { i, ...s, Vo, Va, Corg: Corg * (1 + ctx.noise(0.006)), Caq: cfg.caq(Corg, K) * (1 + ctx.noise(0.008)), stage: 0, Vorg: null, Vaq: null, aq: cfg.aqChoices[0] };
+    });
+    let cur = 0, mode = null;
+    const msg = h('div', { class: 'msg' }), setSeg = h('div', { class: 'seg' }), stepBox = h('div', { class: 'stepper' });
+    const tit = VL.titration(ctx.bench, { title: 'Titration', onRecord: v => { const s = sets[cur]; if (mode === 'org') { s.Vorg = v; } else { s.Vaq = v; } mode = null; msg.className = 'msg ok'; msg.textContent = 'Reading stored. See the Results tab.'; paint(); ctx.refresh(); if (sets.every(x => x.Vorg != null && x.Vaq != null)) ctx.done(); } });
+    function arm(which) {
+      const s = sets[cur]; mode = which;
+      if (which === 'org') tit.setup({ end: s.Corg * cfg.orgAliquot / cfg.titOrg.N, titrant: cfg.titOrg.name, sample: `${cfg.orgAliquot} ml ${cfg.orgName} layer${cfg.titOrg.extra ? ' ' + cfg.titOrg.extra : ''}`, indicator: cfg.indicator });
+      else tit.setup({ end: s.Caq * s.aq / cfg.titAq.N, titrant: cfg.titAq.name, sample: `${s.aq} ml aqueous layer${cfg.titAq.extra ? ' ' + cfg.titAq.extra : ''}`, indicator: cfg.indicator });
+      msg.textContent = '';
+    }
+    function paint() {
+      const s = sets[cur];
+      setSeg.replaceChildren(...sets.map(x => h('button', { class: 'btn', 'aria-pressed': String(x.i === cur), onclick: () => { cur = x.i; tit.reset(); paint(); } }, `Set ${x.i + 1}` + (x.Vorg != null && x.Vaq != null ? ' ✓' : ''))));
+      const st = (n, txt, label, fn) => h('div', { class: 'step' + (s.stage > n ? ' done' : '') }, h('div', { class: 't', html: txt }), h('button', { class: 'btn small', disabled: s.stage !== n, onclick: fn }, label));
+      const adv = (m) => () => { s.stage++; msg.className = 'msg'; msg.textContent = m || ''; paint(); };
+      const aqSel = h('select', { class: 'inp', 'aria-label': 'Aqueous aliquot (ml)', disabled: s.stage < 4, onchange: e => { s.aq = +e.target.value; } }, cfg.aqChoices.map(v => h('option', { value: v, selected: v === s.aq }, v + ' ml')));
+      stepBox.replaceChildren(
+        st(0, `Into a separating funnel put <b>${s.water} ml water</b> + <b>${s.stock} ml</b> ${cfg.stockName}` + (s.extra ? ` + <b>${s.extra} ml</b> ${cfg.orgName}` : ''), 'Prepare mixture', adv('Mixture prepared in the funnel.')),
+        st(1, 'Shake vigorously for 30 minutes to reach distribution equilibrium (shown at 60× speed)', 'Shake 30 min', () => { s.stage++; msg.textContent = 'Shaken for 30 minutes.'; paint(); }),
+        st(2, 'Stand for 10 minutes with the stopper removed until two clear layers form', 'Let stand 10 min', adv('Two clear layers: ' + cfg.layerNote)),
+        st(3, cfg.drainText || 'Drain the lower aqueous layer into a dry stoppered bottle. Discard the interface; the organic layer stays in the funnel.', 'Separate layers', adv('Layers separated.')),
+        h('div', { class: 'step' }, h('div', { class: 't' }, `Choose the aqueous aliquot. A larger aliquot gives a bigger titre and a better reading.`), aqSel),
+        h('div', { class: 'step' }, h('div', { class: 't' }, 'Pipette an aliquot of each layer and titrate'), h('div', { class: 'seg' },
+          h('button', { class: 'btn small', disabled: s.stage < 4, onclick: () => arm('org') }, 'Titrate organic layer' + (s.Vorg != null ? ' ✓' : '')),
+          h('button', { class: 'btn small', disabled: s.stage < 4, onclick: () => arm('aq') }, 'Titrate aqueous layer' + (s.Vaq != null ? ' ✓' : '')))));
+    }
+    ctx.bench.prepend(h('div', { class: 'card' }, h('h3', {}, 'Separating funnels'), h('p', { class: 'muted' }, cfg.benchNote), setSeg, h('div', { style: { height: '10px' } }), stepBox, msg));
+    paint();
+
+    const calc = () => sets.filter(s => s.Vorg != null && s.Vaq != null).map(s => {
+      const Norg = cfg.titOrg.N * s.Vorg / cfg.orgAliquot, Naq = cfg.titAq.N * s.Vaq / s.aq;
+      return { s, Norg, Naq, K: cfg.kOf(Norg, Naq), lo: Math.log10(Norg), la: Math.log10(Naq) };
+    });
+    const fit = rows => VL.linfit(rows.map(r => [r.lo, r.la]));
+    ctx.render = () => {
+      const rows = calc(), g = h('div');
+      const f = rows.length >= 2 ? fit(rows) : null, Km = rows.length ? rows.reduce((a, r) => a + r.K, 0) / rows.length : null;
+      const out = f ? cfg.interpret(f, Km) : null;
+      ctx.results.replaceChildren(
+        h('div', { class: 'card' }, h('h3', {}, 'Observation table'), rows.length ? VL.table(['Set', cfg.vOrgHead, cfg.vAqHead, 'N<sub>org</sub> = C<sub>org</sub>', 'N<sub>aq</sub> = C<sub>aq</sub>', cfg.kHead, 'log C<sub>org</sub>', 'log C<sub>aq</sub>'], rows.map(r => [r.s.i + 1 + '', fmt(r.s.Vorg, 2), fmt(r.s.Vaq, 2) + ` (${r.s.aq} ml)`, fmt(r.Norg, 4), fmt(r.Naq, 5), fmt(r.K, 2), fmt(r.lo, 3), fmt(r.la, 3)])) : h('p', { class: 'muted' }, 'Titrate both layers of at least two sets on the bench.'), Km ? h('p', {}, h('b', {}, 'Mean K = '), fmt(Km, 2)) : null),
+        h('div', { class: 'card' }, h('h3', {}, 'log C(aq) against log C(org)'), g, out ? h('p', {}, `Slope = ${fmt(f.m, 3)}, intercept = ${fmt(f.c, 3)}, r² = ${fmt(f.r2, 4)}. `, out.text) : null),
+        h('div', { class: 'card' }, h('h3', {}, 'Check your calculation'), h('p', { class: 'muted' }, cfg.calcHint),
+          VL.check({ label: 'Mean partition coefficient K', tol: 0.05, expected: () => Km, working: cfg.working }),
+          VL.check({ label: 'Slope of the log–log line', tol: 0, abs: 0.05, expected: () => f && f.m, working: 'Slope = (change in log C<sub>aq</sub>) / (change in log C<sub>org</sub>) between the two end points of the fitted line.' })));
+      VL.graph(g, { xlabel: 'log C(org)', ylabel: 'log C(aq)', series: [{ name: 'Sets', pts: rows.map(r => [r.lo, r.la]) }], lines: f ? (() => { const xs = rows.map(r => r.lo), a = Math.min(...xs), b = Math.max(...xs); return [{ name: 'Best fit', pts: [[a, f.m * a + f.c], [b, f.m * b + f.c]], dashed: true }]; })() : [] });
+    };
+    ctx.reportFn = () => {
+      const rows = calc(); if (!rows.length) return {};
+      const f = rows.length >= 2 ? fit(rows) : null, Km = rows.reduce((a, r) => a + r.K, 0) / rows.length, out = f ? cfg.interpret(f, Km) : null;
+      return { obs: VL.table(['Set', 'V org (ml)', 'V aq (ml)', 'N org', 'N aq', cfg.kHead, 'log Corg', 'log Caq'], rows.map(r => [r.s.i + 1 + '', fmt(r.s.Vorg, 2), fmt(r.s.Vaq, 2), fmt(r.Norg, 4), fmt(r.Naq, 5), fmt(r.K, 2), fmt(r.lo, 3), fmt(r.la, 3)])), calc: `<p>${cfg.working}</p>`, result: `<p>Mean partition coefficient K = ${fmt(Km, 2)}.${f ? ' Graph slope = ' + fmt(f.m, 3) + ', so ' + out.text : ''}</p>` };
+    };
+  };
+};
+
+/* Experiment 1: Solubility of benzoic acid at room and elevated temperature */
+VL.register({
+  id: 'exp1', no: 1, title: 'Solubility of a drug', sub: 'Benzoic acid in water at room temperature and 40 to 80 °C', topic: ['Solubility', 'Acid–base titration'],
+  aim: 'Determination of solubility of a drug (benzoic acid) at room temperature and at elevated temperature.',
+  reference: 'Martin’s Physical Pharmacy and Pharmaceutical Sciences, 6th ed., 2011.',
+  theory: `<p>Solubility is the amount of solute dissolved in a given quantity of solvent. Drug bioavailability depends on it, so it guides solvent selection and preformulation work. A saturated solution holds the maximum solute at equilibrium; an unsaturated one holds less.</p>
+  <p>Solubility rises with temperature for most solids. Polar solvents (high dielectric constant, hydrogen bonding) dissolve polar and ionic solutes; non-polar solvents dissolve non-polar solutes. Pressure matters mainly for gases.</p>
+  <p>Benzoic acid is a weak acid, so the dissolved amount is found by titrating a measured volume of the clear supernatant with standard NaOH using phenolphthalein (colourless to pink).</p>
+  <div class="eq">N₁V₁ = N₂V₂, so N₁ = N₂V₂ / V₁<br>S (g/100 ml) = N × E × 100 / 1000, with E = 122.12</div>
+  <p>USP descriptive terms: very soluble (&lt;1 part solvent per part solute), freely soluble 1–10, soluble 10–30, sparingly soluble 30–100, slightly soluble 100–1000, very slightly soluble 1000–10000, practically insoluble &gt;10000.</p>`,
+  chemicals: ['Distilled water', 'Benzoic acid', '0.1 N sodium hydroxide', 'Phenolphthalein indicator'],
+  apparatus: ['Round bottom flask / beakers', 'Burette', 'Pipette', 'Stirrer', 'Conical flask', 'Water bath and thermometer'],
+  steps: ['Clean all glassware thoroughly.', 'Take 25 ml distilled water, add excess benzoic acid with stirring to make a saturated solution (room temperature series: warm the water, then cool back to room temperature).', 'Withdraw <b>5 ml</b> of clear supernatant for room temperature, and <b>10 ml</b> for the elevated temperature runs, into a conical flask.', 'Titrate against 0.1 N NaOH using phenolphthalein. End point: colourless to pink.', 'Repeat with fresh 25 ml water heated to 40, 50, 60, 70 and 80 °C, adding excess benzoic acid immediately and withdrawing supernatant at that temperature.', 'Calculate normality and solubility at each temperature and plot solubility against temperature.'],
+  viva: {
+    A: [['What is the purpose of this experiment?', 'To find how much benzoic acid dissolves in water at room temperature and at higher temperatures, using acid–base titration.'], ['What is solubility?', 'The amount of solute that dissolves in a given quantity of solvent at a stated temperature to form a saturated solution.'], ['Which solvent is commonly used for solubility determination?', 'Purified (distilled) water; other solvents such as ethanol or buffers are used for drugs that are poorly water soluble.'], ['What is the usual unit of solubility?', 'g/100 ml, mg/ml, % w/v, molarity or mole fraction.'], ['How is temperature maintained during the experiment?', 'With a thermostatically controlled water bath and a thermometer, stirring so the temperature is uniform.']],
+    B: [['What happens to solubility when temperature increases (for most drugs)?', 'It increases, because dissolution of most solids absorbs heat (endothermic).'], ['What is meant by a saturated solution?', 'A solution holding the maximum solute at that temperature, in equilibrium with undissolved solute.'], ['Which method is generally used for solubility determination?', 'The equilibrium (shake-flask) method, followed by analysis of the clear supernatant.'], ['Why is the solution filtered before analysis?', 'To remove undissolved particles so that only dissolved drug is measured.'], ['How is the concentration of the dissolved drug determined?', 'By titration (as here), or by UV spectrophotometry or HPLC.']]
+  },
+  build(ctx) {
+    const { h, fmt } = VL;
+    const labT = Math.round((26 + ctx.noise(1.2)) * 10) / 10;
+    const SOL = [[0, .17], [20, .29], [25, .34], [30, .42], [40, .60], [50, .95], [60, 1.20], [70, 1.77], [80, 2.75]];
+    const f = ctx.rnd() * 0.06 - 0.03;
+    const sol = T => { for (let i = 1; i < SOL.length; i++) if (T <= SOL[i][0]) { const [t0, s0] = SOL[i - 1], [t1, s1] = SOL[i]; return Math.exp(Math.log(s0) + (Math.log(s1) - Math.log(s0)) * (T - t0) / (t1 - t0)) * (1 + f); } return SOL[SOL.length - 1][1]; };
+    const runs = ctx.data.runs = {}; const temps = [labT, 40, 50, 60, 70, 80];
+    let cur = null, stage = 0;
+    const msg = h('div', { class: 'msg' });
+    const seg = h('div', { class: 'seg' });
+    const stepBox = h('div', { class: 'stepper' });
+    const tit = VL.titration(ctx.bench, { title: 'Titration with 0.1 N NaOH', onRecord: v => { runs[cur].V2 = v; ctx.data.last = cur; stage = 3; paint(); ctx.refresh(); if (Object.keys(runs).length === 6) ctx.done(); } });
+    const T = t => t === labT ? `Room temp (${fmt(labT, 1)} °C)` : `${t} °C`;
+    function pick(t) { cur = t; stage = runs[t] ? 3 : 0; tit.reset(); paint(); }
+    function paint() {
+      seg.replaceChildren(...temps.map(t => h('button', { class: 'btn', 'aria-pressed': String(cur === t), onclick: () => pick(t) }, T(t) + (runs[t] && runs[t].V2 != null ? ' ✓' : ''))));
+      const v1 = cur === labT ? 5 : 10;
+      const st = (n, txt, label, fn) => h('div', { class: 'step' + (stage > n ? ' done' : '') }, h('div', { class: 't' }, txt), h('button', { class: 'btn small', disabled: cur == null || stage !== n, onclick: fn }, label));
+      stepBox.replaceChildren(
+        st(0, cur === labT ? 'Warm 25 ml water slightly, add excess benzoic acid, stir, then cool to room temperature' : cur == null ? 'Pick a temperature first' : `Heat 25 ml water to ${cur} °C and add excess benzoic acid at once, stirring`, 'Prepare saturated solution', () => { runs[cur] = { T: cur, V1: v1, V2: null }; stage = 1; msg.textContent = 'Saturated solution ready with undissolved solid at the bottom.'; paint(); }),
+        st(1, `Withdraw ${v1} ml of clear supernatant into a conical flask${cur === labT ? '' : ' (keep the bath at temperature)'}`, 'Pipette ' + v1 + ' ml', () => { stage = 2; paint(); }),
+        st(2, 'Add 2 drops of phenolphthalein and fill the burette with 0.1 N NaOH', 'Set up titration', () => { const S = sol(cur) * (1 + ctx.noise(0.01)); const N1 = S * 10 / 122.12; tit.setup({ end: N1 * v1 / 0.1, titrant: '0.1 N NaOH', sample: `${v1} ml benzoic acid supernatant + phenolphthalein`, indicator: { name: 'colourless to pink', from: 'var(--liquid)', to: '#e0328f' } }); stage = 2.5; paint(); }));
+    }
+    ctx.bench.prepend(h('div', { class: 'card' }, h('h3', {}, 'Saturated solutions'), h('p', { class: 'muted' }, 'Run the six temperatures in any order.'), seg, h('div', { style: { height: '10px' } }), stepBox, msg));
+    paint();
+
+    ctx.render = () => {
+      const list = temps.filter(t => runs[t] && runs[t].V2 != null).sort((a, b) => a - b);
+      const rows = list.map((t, i) => { const r = runs[t], N = 0.1 * r.V2 / r.V1, S = N * 122.12 * 100 / 1000; r.N = N; r.S = S; return [i + 1 + '', t === labT ? fmt(labT, 1) + ' (RT)' : t, r.V1, fmt(r.V2, 2), fmt(N, 4), fmt(S, 3)]; });
+      const gdiv = h('div'); const sel = h('select', { class: 'inp', 'aria-label': 'Temperature to check' }, list.map(t => h('option', { value: t }, T(t))));
+      ctx.results.replaceChildren(
+        h('div', { class: 'card' }, h('h3', {}, 'Observation table'), list.length ? VL.table(['Sr.', 'Temp (°C)', 'Vol. of BA (ml)', 'NaOH end point (ml)', 'Normality of BA', 'Solubility (g/100 ml)'], rows) : h('p', { class: 'muted' }, 'Record at least one titration on the bench.')),
+        h('div', { class: 'card' }, h('h3', {}, 'Solubility against temperature'), gdiv),
+        h('div', { class: 'card' }, h('h3', {}, 'Check your calculation'), h('p', {}, 'Pick a run and calculate S = N × 122.12 / 10 with N = 0.1 × V₂ / V₁.'), sel,
+          VL.check({ label: 'Solubility (g/100 ml)', unit: 'g/100 ml', tol: 0.03, expected: () => { const r = runs[sel.value]; return r && r.V2 != null ? 0.1 * r.V2 / r.V1 * 122.12 / 10 : null; }, working: 'N = 0.1 × V₂ / V₁<br>S = N × 122.12 × 100 / 1000' })));
+      VL.graph(gdiv, { xlabel: 'Temperature (°C)', ylabel: 'Solubility (g/100 ml)', xmin: 0, ymin: 0, series: [{ name: 'Benzoic acid', pts: list.map(t => [t, runs[t].S]), line: true }] });
+    };
+    ctx.reportFn = () => {
+      const list = temps.filter(t => runs[t] && runs[t].V2 != null).sort((a, b) => a - b);
+      if (!list.length) return {};
+      const rows = list.map((t, i) => { const r = runs[t], N = 0.1 * r.V2 / r.V1; return [i + 1 + '', fmt(t, 1), r.V1, fmt(r.V2, 2), fmt(N, 4), fmt(N * 12.212, 3)]; });
+      const rt = runs[labT];
+      const S = rt && rt.V2 != null ? 0.1 * rt.V2 / rt.V1 * 12.212 : null;
+      const cls = S ? (100 / S < 30 ? 'soluble' : 100 / S < 100 ? 'sparingly soluble' : 100 / S < 1000 ? 'slightly soluble' : 'very slightly soluble') : '';
+      return { obs: VL.table(['Sr.', 'Temp (°C)', 'Vol. BA (ml)', 'NaOH (ml)', 'Normality', 'S (g/100 ml)'], rows), calc: '<p>N<sub>BA</sub> = 0.1 × V<sub>NaOH</sub> / V<sub>BA</sub>; S = N × 122.12 / 10 (g/100 ml).</p>', result: `<p>Solubility of benzoic acid in water at room temperature (${fmt(labT, 1)} °C) = ${S ? fmt(S, 3) + ' g/100 ml (' + cls + ')' : 'not recorded'}. Solubility increased steadily with temperature, reaching ${fmt(0.1 * runs[list[list.length - 1]].V2 / runs[list[list.length - 1]].V1 * 12.212, 3)} g/100 ml at ${list[list.length - 1]} °C.</p>` };
+    };
+  }
+});
+
+/* Experiment 2: pKa by half neutralization / Henderson-Hasselbalch */
+VL.register({
+  id: 'exp2', no: 2, title: 'pKa by half neutralization', sub: 'Acetic acid titrated against NaOH with a pH meter', topic: ['pKa', 'Potentiometry', 'Buffers'],
+  aim: 'To determine the pKa of a weak acid (acetic acid) by titrating it against a strong base potentiometrically, using the Henderson–Hasselbalch equation.',
+  reference: 'More HN, Hajare AA. Practical Physical Pharmacy, Career Publications, 2010: 224–226.',
+  theory: `<p>When acetic acid is titrated with a strong base, a mixture of the acid and its salt forms, and this mixture acts as a buffer. Its pH at any stage follows the Henderson–Hasselbalch equation.</p>
+  <div class="eq">pH = pKa + log ([Salt] / [Acid])</div>
+  <p>At half neutralization the salt and acid concentrations are equal, so the log term is zero and <b>pH = pKa</b>. The end point is found accurately from the peak of a dpH/dV against V plot, and half of that volume locates the half neutralization point on the pH against V curve.</p>
+  <p>pKa = −log Ka. A lower pKa means a stronger acid.</p>`,
+  chemicals: ['0.04 N acetic acid', '0.04 N NaOH (standard)', 'Buffer solutions of known pH'],
+  apparatus: ['Burette', 'Beakers', 'Stirrer', 'pH meter with electrode'],
+  steps: ['Standardize the pH meter with buffer solutions of known pH.', 'Pipette 25 ml of 0.04 N acetic acid into a dry beaker and dip the electrode in. Measure the pH.', 'Add 1 ml of 0.04 N NaOH from the burette, stir, and measure the pH.', 'Continue adding 1 ml at a time until the pH changes suddenly, then use smaller additions, and take at least three more readings beyond the jump.', 'Calculate dpH, dV and dpH/dV. Plot pH against V and dpH/dV against V.', 'Read the end point x from the dpH/dV peak, then read the pH at V = x/2. That pH equals pKa.'],
+  viva: {
+    A: [['What is the purpose of this experiment?', 'To find the pKa of a weak acid from its titration curve with a strong base.'], ['What is pKa?', 'The negative logarithm of the acid dissociation constant Ka.'], ['What is the relationship between pKa and Ka?', 'pKa = −log Ka, so a larger Ka means a smaller pKa.'], ['What is the pH at the half-neutralization point?', 'It equals the pKa, because [salt] = [acid].'], ['Name the equation used in this experiment.', 'The Henderson–Hasselbalch equation.']],
+    B: [['Write the Henderson–Hasselbalch equation.', 'pH = pKa + log([salt]/[acid]).'], ['Which instrument is used to measure pH?', 'A pH meter with a glass electrode.'], ['What is meant by half-neutralization point?', 'The point where half the acid has been converted to its salt, so [salt] = [acid].'], ['Why is pKa determination important?', 'pKa decides ionization at a given pH, which controls solubility, absorption, partitioning and stability of a drug.'], ['What type of acid is suitable for this method?', 'A weak acid (or a weak base), which forms a buffer region during titration.']]
+  },
+  build(ctx) {
+    const { h, fmt } = VL;
+    const pKaTrue = 4.76 + ctx.noise(0.01), Ka = Math.pow(10, -pKaTrue), Kw = 1e-14;
+    const lab = Math.round((26 + ctx.noise(1)) * 10) / 10;
+    const rows = ctx.data.rows = []; let vol = 0;
+    const truePH = V => { const Ca = 0.04 * 25 / (25 + V), Cb = 0.04 * V / (25 + V); return VL.bisect(p => { const H = Math.pow(10, -p); return H + Cb - Kw / H - Ca * Ka / (Ka + H); }, 1, 13); };
+    const meter = VL.phmeter(ctx.bench, { rnd: ctx.rnd, offset: ctx.rnd() < 0.5 ? 0.31 : -0.24 });
+    const msg = h('div', { class: 'msg' }), tot = h('div', { class: 'readout' });
+    const dv = h('input', { id: 'dv', class: 'inp', type: 'number', step: '0.1', min: '0.1', value: '1', 'aria-label': 'Volume of NaOH to add (ml)' });
+    const upd = () => { tot.innerHTML = `${fmt(vol, 2)}<small> ml NaOH added</small>`; };
+    function read(add) {
+      if (!meter.calibrated) { msg.className = 'msg bad'; msg.textContent = 'Calibrate the pH meter with two buffers first.'; return; }
+      if (add && !(add > 0)) { msg.className = 'msg warn'; msg.textContent = 'Enter a positive volume.'; return; }
+      if (!add && rows.length) { msg.className = 'msg warn'; msg.textContent = 'The initial reading is already recorded.'; return; }
+      if (vol + (add || 0) > 40) { msg.className = 'msg warn'; msg.textContent = 'Enough NaOH added (40 ml).'; return; }
+      vol = Math.round((vol + (add || 0)) * 100) / 100;
+      const p = meter.show(truePH(vol)); rows.push({ V: vol, pH: p }); upd();
+      msg.className = 'msg ok'; msg.textContent = `V = ${fmt(vol, 2)} ml, pH = ${fmt(p, 2)}`; ctx.refresh();
+    }
+    const quick = d => h('button', { class: 'btn', onclick: () => read(d) }, `+${d} ml`);
+    ctx.bench.append(h('div', { class: 'card' }, h('h3', {}, '25 ml of 0.04 N acetic acid in the beaker'), h('p', { class: 'muted' }, `Room temperature ${fmt(lab, 1)} °C. Use 1 ml steps first, then 0.1 to 0.2 ml near the sudden jump (around 25 ml).`), tot,
+      h('div', { class: 'seg' }, h('button', { class: 'btn', onclick: () => read(0) }, 'Measure starting pH'), quick(1), quick(0.5), quick(0.2), quick(0.1)),
+      h('div', { class: 'row-inputs', style: { marginTop: '10px' } }, h('label', { for: 'dv' }, 'Custom volume (ml)', dv), h('button', { class: 'btn', onclick: () => read(parseFloat(dv.value)) }, 'Add NaOH and read pH'), h('button', { class: 'btn', onclick: () => { rows.length = 0; vol = 0; upd(); msg.textContent = 'Started again with a fresh beaker.'; ctx.refresh(); } }, 'New beaker')), msg));
+    upd();
+
+    function analyse() {
+      const r = rows, d = [];
+      for (let i = 1; i < r.length; i++) { const dV = r[i].V - r[i - 1].V, dp = r[i].pH - r[i - 1].pH; d.push({ mid: (r[i].V + r[i - 1].V) / 2, dV, dp, s: dp / dV }); }
+      if (d.length < 5) return { d };
+      let k = 0; d.forEach((x, i) => { if (x.s > d[k].s) k = i; });
+      let Ve = d[k].mid;
+      if (k > 0 && k < d.length - 1) { const [a, b, c] = [d[k - 1], d[k], d[k + 1]]; const den = (a.mid - b.mid) * (a.mid - c.mid) * (b.mid - c.mid); const A = (c.mid * (b.s - a.s) + b.mid * (a.s - c.s) + a.mid * (c.s - b.s)) / den, B = (c.mid * c.mid * (a.s - b.s) + b.mid * b.mid * (c.s - a.s) + a.mid * a.mid * (b.s - c.s)) / den; if (A < 0) { const vx = -B / (2 * A); if (Math.abs(vx - b.mid) < Math.max(a.dV, b.dV, c.dV)) Ve = vx; } }
+      const Vh = Ve / 2; let pKa = null;
+      for (let i = 1; i < r.length; i++) if (r[i - 1].V <= Vh && r[i].V >= Vh) pKa = r[i - 1].pH + (r[i].pH - r[i - 1].pH) * (Vh - r[i - 1].V) / (r[i].V - r[i - 1].V);
+      const hh = r.filter(x => x.V > 0.1 * Ve && x.V < 0.9 * Ve).map(x => x.pH - Math.log10(x.V / (Ve - x.V)));
+      return { d, Ve, Vh, pKa, hh, hhMean: hh.length ? hh.reduce((a, b) => a + b) / hh.length : null };
+    }
+    ctx.render = () => {
+      const a = analyse(), r = rows;
+      const g1 = h('div'), g2 = h('div');
+      const trows = r.map((x, i) => i ? [fmt(x.V, 2), fmt(x.pH, 2), fmt(a.d[i - 1].dp, 2), fmt(a.d[i - 1].dV, 2), fmt(a.d[i - 1].s, 3)] : [fmt(x.V, 2), fmt(x.pH, 2), '', '', '']);
+      ctx.results.replaceChildren(
+        h('div', { class: 'card' }, h('h3', {}, `Observation table (room temperature ${fmt(lab, 1)} °C)`), r.length ? VL.table(['V of 0.04 N NaOH (ml)', 'pH', 'dpH', 'dV', 'dpH/dV'], trows) : h('p', { class: 'muted' }, 'Take readings on the bench first.')),
+        h('div', { class: 'cols' }, h('div', { class: 'card' }, h('h3', {}, 'pH against volume'), g1), h('div', { class: 'card' }, h('h3', {}, 'dpH/dV against volume (end point)'), g2)),
+        h('div', { class: 'card' }, h('h3', {}, 'Result'), a.Ve ? h('div', {}, h('p', {}, `End point from the dpH/dV peak: ${fmt(a.Ve, 2)} ml. Half-neutralization volume: ${fmt(a.Vh, 2)} ml.`), a.pKa != null ? h('p', {}, `pH at half neutralization = pKa = ${fmt(a.pKa, 2)}; Ka = ${(Math.pow(10, -a.pKa)).toExponential(2)}.`) : h('p', { class: 'warn' }, 'No reading brackets the half-neutralization volume. Add readings around it.'), a.hhMean != null ? h('p', { class: 'muted' }, `Henderson–Hasselbalch check on buffer-region readings: mean pKa = ${fmt(a.hhMean, 2)} from ${a.hh.length} points.`) : null,
+          VL.check({ label: 'Your pKa', tol: 0, abs: 0.06, unit: '', expected: () => a.pKa, working: 'Find x at the dpH/dV peak, read the pH at V = x/2 on the pH curve. pH = pKa.' }),
+          VL.check({ label: 'Your Ka (e.g. 1.8e-5)', tol: 0.15, expected: () => a.pKa != null ? Math.pow(10, -a.pKa) : null, working: 'Ka = 10<sup>−pKa</sup>' })) : h('p', { class: 'muted' }, 'Record the starting pH, buffer-region points and at least three points beyond the sudden jump.')));
+      const pts = r.map(x => [x.V, x.pH]);
+      VL.graph(g1, { xlabel: 'Volume of 0.04 N NaOH (ml)', ylabel: 'pH', xmin: 0, ymin: 0, series: [{ name: 'pH', pts, line: true }], marks: a.pKa != null ? [{ x: a.Vh, y: a.pKa, label: `pH = pKa = ${fmt(a.pKa, 2)}` }] : [] });
+      VL.graph(g2, { xlabel: 'Volume of NaOH (ml)', ylabel: 'dpH/dV', xmin: 0, ymin: 0, series: [{ name: 'dpH/dV', pts: a.d.map(x => [x.mid, x.s]), line: true, color: 'var(--teal)' }], marks: a.Ve ? [{ x: a.Ve, y: Math.max(...a.d.map(x => x.s)), label: `end point ${fmt(a.Ve, 1)} ml` }] : [] });
+      if (a.pKa != null) ctx.done();
+    };
+    ctx.reportFn = () => { const a = analyse(); if (!rows.length) return {}; const r = rows; return { obs: VL.table(['V NaOH (ml)', 'pH', 'dpH', 'dV', 'dpH/dV'], r.map((x, i) => i ? [fmt(x.V, 2), fmt(x.pH, 2), fmt(a.d[i - 1].dp, 2), fmt(a.d[i - 1].dV, 2), fmt(a.d[i - 1].s, 3)] : [fmt(x.V, 2), fmt(x.pH, 2), '', '', ''])), calc: a.Ve ? `<p>End point (dpH/dV peak) x = ${fmt(a.Ve, 2)} ml; pH read at V = x/2 = ${fmt(a.Vh, 2)} ml gives pH = pKa.</p>` : '', result: a.pKa != null ? `<p>pKa of acetic acid = ${fmt(a.pKa, 2)} at ${fmt(lab, 1)} °C. Ka = ${Math.pow(10, -a.pKa).toExponential(2)}.</p>` : '' }; };
+  }
+});
+
+/* Experiment 3: Partition coefficient of benzoic acid between benzene and water */
+VL.register({
+  id: 'exp3', no: 3, title: 'Partition coefficient of benzoic acid', sub: 'Benzene and water, with association to dimers in benzene', topic: ['Partition', 'Distribution law'],
+  aim: 'To determine the partition coefficient of benzoic acid between benzene and water.',
+  reference: 'More HN, Hajare AA. Practical Physical Pharmacy, Career Publications, 2010: 73–76.',
+  theory: `<p>When a solute is shaken with two immiscible solvents it distributes between them. At equilibrium and constant temperature the ratio of its concentrations in the two solvents is constant. That constant is the partition (distribution) coefficient K.</p>
+  <p>Benzoic acid associates into dimers in benzene (n = 2), so the concentration in the benzene layer is raised to the power 1/2.</p>
+  <div class="eq">K = C<sub>org</sub><sup>1/2</sup> / C<sub>aq</sub><br>log C<sub>aq</sub> = (1/n) log C<sub>org</sub> + log k</div>
+  <p>A plot of log C<sub>aq</sub> against log C<sub>org</sub> is a straight line (y = mx + c) with slope 1/n, so n is about 2 for a dimer. Concentrations are found by titrating each layer with NaOH using phenolphthalein.</p>
+  <div class="note">The manual pipettes 10 ml of each layer in the procedure but uses 5 ml in one worked formula. This lab uses the 10 ml aliquots from the procedure, and shows the aliquot you chose in the table.</div>`,
+  chemicals: ['Saturated solution of benzoic acid in benzene (stock)', 'Benzene', '0.1 N NaOH', '0.01 N NaOH', 'Distilled water', 'Phenolphthalein'],
+  apparatus: ['Separating funnels', '250 ml conical flasks', 'Pipettes', 'Burette', 'Stoppered bottles'],
+  steps: ['Prepare in separating funnels: Set I = 25 ml water + 25 ml stock; Set II = 25 ml water + 20 ml stock + 5 ml benzene; Set III = 25 ml water + 15 ml stock + 10 ml benzene.', 'Shake vigorously for about 30 minutes, then let stand 10 minutes with the stopper open until two clear layers form.', 'Drain the lower aqueous layer into dry stoppered bottles and discard the interface. The benzene layer stays in the funnel.', 'Pipette 10 ml of the benzene layer and titrate with 0.1 N NaOH (phenolphthalein, colourless to pink).', 'Pipette 10 ml of the aqueous layer and titrate with 0.01 N NaOH (colourless to pink).', 'Calculate C<sub>org</sub>, C<sub>aq</sub>, K and plot log C<sub>aq</sub> against log C<sub>org</sub>.'],
+  viva: {
+    A: [['What is the purpose of this experiment?', 'To find the partition coefficient of benzoic acid between benzene and water and the state of association in benzene.'], ['What is partition coefficient (K)?', 'The constant ratio of the concentrations of a solute in two immiscible solvents at equilibrium and constant temperature.'], ['Write the formula for partition coefficient.', 'K = C(org)¹ᐟ² / C(aq) for benzoic acid; in general K = C1/C2.'], ['Which two solvents are used?', 'Benzene (organic) and water (aqueous).'], ['Which solute is used?', 'Benzoic acid.']],
+    B: [['What type of compound is benzoic acid?', 'A weak organic carboxylic acid.'], ['What is the principle of this experiment?', 'The Nernst distribution law: a solute distributes between two immiscible solvents in a constant ratio.'], ['Which law governs this experiment?', 'Nernst distribution (partition) law.'], ['Why is the mixture shaken thoroughly?', 'To reach distribution equilibrium quickly by increasing the contact area between the layers.'], ['Which method determines the concentration in each layer?', 'Acid–base titration with standard NaOH and phenolphthalein.']]
+  },
+  build(ctx) {
+    VL.partitionBuild({
+      sets: [{ stock: 25, extra: 0, water: 25 }, { stock: 20, extra: 5, water: 25 }, { stock: 15, extra: 10, water: 25 }],
+      C0: 0.25, K: 20, caq: (c, K) => Math.sqrt(c) / K, kOf: (Norg, Naq) => Math.sqrt(Norg) / Naq,
+      stockName: 'saturated benzoic acid in benzene', orgName: 'benzene', aqChoices: [10, 5], orgAliquot: 10,
+      titOrg: { N: 0.1, name: '0.1 N NaOH' }, titAq: { N: 0.01, name: '0.01 N NaOH' },
+      indicator: { name: 'colourless to pink', from: 'var(--liquid)', to: '#e0328f', mode: 'appear' },
+      layerNote: 'benzene on top, water below.', benchNote: 'Work through the three sets. Each needs both layers titrated.',
+      vOrgHead: 'V<sub>org</sub> (0.1 N NaOH, ml)', vAqHead: 'V<sub>aq</sub> (0.01 N NaOH, ml)', kHead: 'K = C<sub>org</sub><sup>1/2</sup>/C<sub>aq</sub>',
+      calcHint: 'N<sub>org</sub> = 0.1 × V₁ / 10, N<sub>aq</sub> = 0.01 × V₃ / aliquot, then K = √N<sub>org</sub> / N<sub>aq</sub>.',
+      working: 'N = (normality of NaOH × titre) / volume of layer pipetted.<br>K = (C<sub>org</sub>)<sup>1/2</sup> / C<sub>aq</sub>, averaged over the sets.',
+      interpret: (f, K) => ({ n: 1 / f.m, text: f.m > 0.4 && f.m < 0.6 ? `n = 1/slope = ${VL.fmt(1 / f.m, 2)}, close to 2, so benzoic acid exists as a dimer in benzene.` : `n = 1/slope = ${VL.fmt(1 / f.m, 2)}. Expect about 2; repeat any titration that looks off.` })
+    })(ctx);
+  }
+});
+
+/* Experiment 4: Partition coefficient of iodine between CCl4 and water */
+VL.register({
+  id: 'exp4', no: 4, title: 'Partition coefficient of iodine', sub: 'Carbon tetrachloride and water, titrated with sodium thiosulphate', topic: ['Partition', 'Iodometry'],
+  aim: 'To determine the partition coefficient of iodine between carbon tetrachloride (CCl₄) and water.',
+  reference: 'Practical Physical Pharmacy; distribution law (Nernst).',
+  theory: `<p>A solute shaken with two immiscible solvents distributes between them. At equilibrium and constant temperature the ratio of its concentrations is constant, the partition coefficient K.</p>
+  <p>Iodine and CCl₄ are both non-polar, so iodine is far more soluble in CCl₄ than in water (like dissolves like). Iodine is titrated with sodium thiosulphate using starch; the blue colour disappears at the end point.</p>
+  <div class="eq">K = C<sub>org</sub> / C<sub>aq</sub><br>log C<sub>aq</sub> = (1/n) log C<sub>org</sub> − log K, with n = 1 for iodine</div>
+  <div class="note">Carbon tetrachloride is toxic and carcinogenic. In a real laboratory it is handled only in a fume cupboard with gloves, and many institutes now use a substitute solvent. The virtual lab removes the hazard.</div>`,
+  chemicals: ['Iodine crystals', 'Carbon tetrachloride', '0.1 N and 0.01 N sodium thiosulphate', 'Starch indicator', 'Distilled water'],
+  apparatus: ['Separating funnels', 'Conical flasks', 'Pipettes', 'Burette', 'Reagent bottles'],
+  steps: ['Prepare about 110 ml of saturated iodine solution in CCl₄ as the stock solution.', 'Prepare four funnels, each with 50 ml water: Set 1 = 40 ml stock + 10 ml CCl₄; Set 2 = 30 + 20; Set 3 = 20 + 30; Set 4 = 10 + 40.', 'Shake for 30 minutes, then stand for 10 minutes until two layers separate.', 'Drain the lower layer. Pipette 10 ml of the organic layer and titrate with 0.1 N thiosulphate using starch; the blue colour disappears at the end point.', 'Pipette the aqueous layer and titrate with 0.01 N thiosulphate and starch.', 'Calculate C<sub>org</sub>, C<sub>aq</sub> and K for each set and plot log C<sub>aq</sub> against log C<sub>org</sub>.'],
+  viva: {
+    A: [['Define partition coefficient.', 'The constant ratio of the concentrations of a solute in two immiscible solvents at equilibrium at a fixed temperature.'], ['What is the role of the starch indicator?', 'It forms a blue complex with iodine and makes the end point of the thiosulphate titration sharp (blue disappears).'], ['Give the use of a separating funnel.', 'To mix two immiscible liquids and then separate the layers.'], ['Mention the partition coefficient of iodine.', 'About 85 to 90 between CCl₄ and water (C org / C aq) at room temperature.'], ['Elaborate an application of partition coefficient studies.', 'Predicting drug absorption and membrane transport, extraction, preservative distribution in emulsions and drug design (log P).']],
+    B: [['Define the term immiscible.', 'Liquids that do not mix to form one homogeneous phase, such as CCl₄ and water.'], ['Enlist any 5 drug partition coefficients (log P).', 'Examples: aspirin about 1.2, paracetamol about 0.5, ibuprofen about 3.5, diazepam about 2.8, caffeine about −0.1 (octanol/water).'], ['Explain the role of carbon tetrachloride.', 'It is the non-polar organic solvent that dissolves iodine and forms the second layer.'], ['Write a note on non-polar solvents.', 'They have low dielectric constant and dissolve non-polar solutes through weak van der Waals forces, e.g. CCl₄, benzene, hexane.'], ['Elaborate the use of iodine in pharmacy.', 'As an antiseptic (tincture, povidone-iodine) and in iodometric assays.']]
+  },
+  build(ctx) {
+    VL.partitionBuild({
+      sets: [{ stock: 40, extra: 10, water: 50 }, { stock: 30, extra: 20, water: 50 }, { stock: 20, extra: 30, water: 50 }, { stock: 10, extra: 40, water: 50 }],
+      C0: 0.23, K: 85, caq: (c, K) => c / K, kOf: (Norg, Naq) => Norg / Naq,
+      stockName: 'saturated iodine in CCl₄', orgName: 'CCl₄', aqChoices: [10, 25, 50], orgAliquot: 10,
+      titOrg: { N: 0.1, name: '0.1 N Na₂S₂O₃', extra: '+ starch' }, titAq: { N: 0.01, name: '0.01 N Na₂S₂O₃', extra: '+ starch' },
+      indicator: { name: 'blue colour disappears', from: '#1c2a8a', to: 'var(--liquid)', mode: 'vanish' },
+      drainText: 'Run the lower CCl\u2084 layer into one dry bottle and keep the upper aqueous layer. (CCl\u2084 is denser than water, so it is the lower layer, although the manual calls the lower layer aqueous.)', layerNote: 'CCl₄ (violet, denser) below, water above. Note CCl₄ is the lower layer here.', benchNote: 'Work through the four sets. For the aqueous layer choose a larger aliquot, because it holds very little iodine.',
+      vOrgHead: 'V<sub>org</sub> (0.1 N thio, ml)', vAqHead: 'V<sub>aq</sub> (0.01 N thio, ml)', kHead: 'K = C<sub>org</sub>/C<sub>aq</sub>',
+      calcHint: 'N<sub>org</sub> = 0.1 × V₁ / 10, N<sub>aq</sub> = 0.01 × V₃ / aliquot, K = N<sub>org</sub> / N<sub>aq</sub>.',
+      working: 'N<sub>1</sub>V<sub>1</sub> = N<sub>2</sub>V<sub>2</sub> for each layer.<br>K = C<sub>org</sub> / C<sub>aq</sub>, averaged over the four sets.',
+      interpret: (f, K) => ({ n: 1 / f.m, text: Math.abs(f.m - 1) < 0.12 ? `slope is close to 1 (n = ${VL.fmt(1 / f.m, 2)}): iodine has the same molecular form in both solvents, and log K = ${VL.fmt(-f.c, 3)} gives K = ${VL.fmt(Math.pow(10, -f.c), 1)} from the graph.` : `slope = ${VL.fmt(f.m, 2)}, expected about 1. Repeat any titration that looks off.` })
+    })(ctx);
+  }
+});
+
+/* Experiment 5: Critical solution temperature of the phenol-water system */
+VL.register({
+  id: 'exp5', no: 5, title: 'CST of the phenol–water system', sub: 'Mutual solubility curve and critical solution temperature', topic: ['Phase equilibria', 'CST'],
+  aim: 'Determination of the critical solution temperature (CST) of the phenol–water system.',
+  reference: 'More HN, Hajare AA. Practical Physical Pharmacy, Career Publications, 2010: 86–87.',
+  theory: `<p>Phenol and water are partially miscible. Shaken together in equal volumes they form two layers: a saturated solution of phenol in water and a saturated solution of water in phenol. These are <b>conjugate solutions</b>.</p>
+  <p>Mutual solubility rises with temperature. At the <b>critical solution temperature (CST)</b>, the highest point of the solubility curve, the two layers merge. Above it phenol and water mix in all proportions.</p>
+  <div class="eq">P (% phenol by weight) = 100 × W₁ / (W₁ + W₂)<br>W₂ = V × d (density of water, 1.0 g/ml)</div>
+  <p>The transition temperature is the temperature at which the cloudiness just disappears on heating, and reappears on cooling. The mean of the two is plotted against P. Impurities, including salts such as NaCl, raise the CST, which is why CST is used to detect them.</p>
+  <div class="note">Phenol is corrosive and toxic. Never touch it; wear gloves and goggles.</div>`,
+  chemicals: ['Liquefied phenol', 'Distilled water'],
+  apparatus: ['Hard glass tube', 'Thermometer (0.1 °C)', 'Stirrer', 'Beaker / water bath'],
+  steps: ['Weigh accurately about 4 g of phenol (W₁) in a glass tube. Do not touch phenol.', 'Insert the stirrer and thermometer and clamp the tube vertically in a water bath.', 'Add 2 ml distilled water and warm the bath from about 30 °C, stirring constantly.', 'Note the temperature at which the mixture just becomes clear (heating).', 'Remove from the bath, keep stirring, and note the temperature at which turbidity reappears (cooling).', 'Add 2 ml more water and repeat. Continue until the transition temperature has passed through a maximum and falls to about 40 °C.', 'Plot mean transition temperature against % phenol and read the maximum: the CST.'],
+  viva: {
+    A: [['What does CST stand for?', 'Critical solution temperature (also called consolute temperature).'], ['What is the principle of this experiment?', 'Mutual solubility of partially miscible liquids increases with temperature until they become completely miscible.'], ['Which two liquids are used?', 'Phenol and water.'], ['What type of system is phenol–water?', 'A partially miscible liquid pair with an upper critical solution temperature.'], ['What happens to solubility of phenol in water as temperature increases?', 'It increases.']],
+    B: [['What is observed at the CST?', 'The meniscus between the two layers disappears and the system becomes a single phase.'], ['What happens above the CST?', 'The two liquids are completely miscible in all proportions.'], ['What happens below the CST?', 'Depending on composition, the mixture separates into two conjugate solutions.'], ['What is the typical CST of the phenol–water system?', 'About 66 °C at roughly 34 % w/w phenol.'], ['Why is CST determination important?', 'It shows purity of the components, since impurities change the CST, and helps study solubilization and phase behaviour.']]
+  },
+  build(ctx) {
+    const { h, fmt } = VL;
+    const CURVE = [[8, 20], [11, 40], [14, 50], [20, 60], [27, 64.5], [34.5, 66], [40, 64.5], [47, 60], [55, 50], [62, 40], [72, 20]];
+    const shift = ctx.noise(0.25);
+    const Tm = P => { if (P <= CURVE[0][0]) return 15 + shift; if (P >= CURVE[10][0]) return 15 + shift; for (let i = 1; i < CURVE.length; i++) if (P <= CURVE[i][0]) { const [a, ta] = CURVE[i - 1], [b, tb] = CURVE[i]; return ta + (tb - ta) * (P - a) / (b - a) + shift; } };
+    const hy = 0.35 + ctx.rnd() * 0.15;
+    let w1 = null, V = 0, T = 30, clear = false; const rows = ctx.data.rows = []; let cur = null;
+    const tubeLiq = h('rect', { x: 62, y: 70, width: 36, height: 120, rx: 4, class: 'liquid' });
+    const merc = h('rect', { x: 142, width: 6, class: 'liquid', style: 'fill:var(--accent)' });
+    const svg = h('svg', { viewBox: '0 0 200 230', role: 'img', 'aria-label': 'Phenol-water tube and thermometer' },
+      h('rect', { x: 20, y: 120, width: 90, height: 90, rx: 6, style: 'fill:var(--teal-soft);stroke:var(--glass);stroke-width:2' }), tubeLiq,
+      h('rect', { x: 62, y: 20, width: 36, height: 170, rx: 5, fill: 'none', style: 'stroke:var(--glass);stroke-width:2.5' }),
+      h('rect', { x: 140, y: 20, width: 10, height: 190, rx: 5, fill: 'none', style: 'stroke:var(--glass);stroke-width:2' }), merc,
+      h('text', { x: 158, y: 30 }, '80°'), h('text', { x: 158, y: 205 }, '20°'));
+    const tdisp = h('div', { class: 'readout' }), state = h('div', { class: 'msg' }), msg = h('div', { class: 'msg' });
+    function paint() {
+      const pct = (T - 20) / 60; merc.setAttribute('y', 210 - pct * 190); merc.setAttribute('height', pct * 190);
+      tdisp.innerHTML = `${fmt(T, 1)}<small> °C</small>`;
+      if (cur) { const m = Tm(cur.P); if (T >= m + hy) clear = true; else if (T <= m - hy) clear = false; }
+      tubeLiq.style.fill = clear ? 'rgba(124,196,200,.28)' : 'rgba(228,208,196,.97)';
+      state.textContent = cur ? (clear ? 'Solution is clear and homogeneous.' : 'Solution is turbid (two phases).') : 'Weigh phenol and add water first.';
+      btnH.disabled = !(cur && clear && cur.heat == null); btnC.disabled = !(cur && !clear && cur.heat != null && cur.cool == null);
+      btnAdd.disabled = !(w1 && V < 28 && (!cur || cur.cool != null));
+    }
+    const step = d => h('button', { class: 'btn', onclick: () => { T = Math.min(80, Math.max(20, Math.round((T + d) * 10) / 10)); paint(); } }, (d > 0 ? '+' : '−') + Math.abs(d));
+    const btnW = h('button', { class: 'btn', onclick: () => { w1 = Math.round((4 + ctx.noise(0.012)) * 100) / 100; msg.className = 'msg ok'; msg.textContent = `Phenol weighed: W₁ = ${fmt(w1, 2)} g. Balance reading recorded.`; btnW.disabled = true; paint(); } }, 'Weigh about 4 g phenol');
+    const btnAdd = h('button', { class: 'btn primary', onclick: () => { V += 2; const W2 = V * 1.0; cur = { V, W2, P: 100 * w1 / (w1 + W2), heat: null, cool: null }; rows.push(cur); T = 30; clear = false; msg.className = 'msg'; msg.textContent = `Added 2 ml water (total ${V} ml). Tube cooled to 30 °C.`; paint(); ctx.refresh(); } }, 'Add 2 ml water');
+    const btnH = h('button', { class: 'btn', onclick: () => { const m = Tm(cur.P) + hy; if (T - m > 1.5) { msg.className = 'msg bad'; msg.textContent = 'You overshot the clearing point. Cool a little and approach it in 0.2 °C steps.'; return; } cur.heat = T; msg.className = 'msg ok'; msg.textContent = `Clearing temperature ${fmt(T, 1)} °C recorded. Now cool slowly until turbidity reappears.`; paint(); ctx.refresh(); } }, 'Record clearing T (heating)');
+    const btnC = h('button', { class: 'btn', onclick: () => { const m = Tm(cur.P) - hy; if (m - T > 1.5) { msg.className = 'msg bad'; msg.textContent = 'You cooled too far past the turbidity point. Warm slightly and cool again slowly.'; return; } cur.cool = T; cur.mean = (cur.heat + cur.cool) / 2; msg.className = 'msg ok'; msg.textContent = `Turbidity temperature ${fmt(T, 1)} °C recorded.`; paint(); ctx.refresh(); if (rows.length >= 12 && rows.every(r => r.mean != null)) ctx.done(); } }, 'Record turbidity T (cooling)');
+    ctx.bench.append(h('div', { class: 'card' }, h('h3', {}, 'Tube and water bath'), h('div', { class: 'burette', style: { gridTemplateColumns: '200px minmax(0,1fr)' } }, svg, h('div', { style: { display: 'grid', gap: '10px' } }, tdisp, state, h('div', { class: 'seg' }, step(-5), step(-1), step(-0.5), step(-0.2), step(0.2), step(0.5), step(1), step(5)), h('div', { class: 'seg' }, btnH, btnC)))),
+      h('div', { class: 'card' }, h('h3', {}, 'Phenol and water'), h('p', { class: 'muted' }, 'Add 2 ml portions (up to 28 ml, 14 additions). For each, find the clearing and turbidity temperatures to 0.2 °C.'), h('div', { class: 'seg' }, btnW, btnAdd), msg));
+    paint();
+
+    const done = () => rows.filter(r => r.mean != null);
+    const info = () => { const d = done(); if (!d.length) return null; let k = d[0]; d.forEach(r => { if (r.mean > k.mean) k = r; }); return k; };
+    ctx.render = () => {
+      const d = done(), best = info(), g = h('div');
+      ctx.results.replaceChildren(
+        h('div', { class: 'card' }, h('h3', {}, `Observation table (W₁ = ${w1 ? fmt(w1, 2) : '–'} g phenol, density of water 1.0 g/ml)`), d.length ? VL.table(['V water (ml)', 'W₂ = V·d (g)', '% phenol P', 'T heating (°C)', 'T cooling (°C)', 'Mean T (°C)'], d.map(r => [r.V, fmt(r.W2, 1), fmt(r.P, 1), fmt(r.heat, 1), fmt(r.cool, 1), fmt(r.mean, 2)]), { hl: (i, r) => best && +r[2] === +fmt(best.P, 1) }) : h('p', { class: 'muted' }, 'Record both temperatures for each addition on the bench.')),
+        h('div', { class: 'card' }, h('h3', {}, 'Transition temperature against % phenol'), g, best && d.length > 6 ? h('p', {}, `Highest transition temperature: CST ≈ ${fmt(best.mean, 1)} °C at about ${fmt(best.P, 0)} % phenol.`) : h('p', { class: 'muted' }, 'Continue past the maximum to about 12 % phenol for a full curve.')),
+        h('div', { class: 'card' }, h('h3', {}, 'Check your reading'), VL.check({ label: 'CST read from your graph (°C)', tol: 0, abs: 1.5, expected: () => best && d.length > 6 ? best.mean : null, working: 'Read the temperature at the top of the curve. Typical value for pure phenol–water is about 66 °C.' }), VL.check({ label: '% phenol at the CST', tol: 0, abs: 5, expected: () => best && d.length > 6 ? best.P : null, working: 'P = 100 × W₁ / (W₁ + W₂) at the row with the highest mean temperature.' })));
+      VL.graph(g, { xlabel: '% phenol by weight (P)', ylabel: 'Mean transition temperature (°C)', xmin: 0, ymin: 20, series: [{ name: 'Mean T', pts: d.slice().sort((a, b) => a.P - b.P).map(r => [r.P, r.mean]), line: true }], marks: best && d.length > 6 ? [{ x: best.P, y: best.mean, label: `CST ${fmt(best.mean, 1)} °C` }] : [] });
+    };
+    ctx.reportFn = () => { const d = done(), b = info(); if (!d.length) return {}; return { obs: VL.table(['V water (ml)', 'W2 (g)', '% phenol', 'T heat', 'T cool', 'Mean T'], d.map(r => [r.V, fmt(r.W2, 1), fmt(r.P, 1), fmt(r.heat, 1), fmt(r.cool, 1), fmt(r.mean, 2)])), calc: `<p>W₁ = ${fmt(w1, 2)} g; W₂ = V × 1.0 g; P = 100 W₁ / (W₁ + W₂).</p>`, result: `<p>The critical solution temperature of the phenol–water system is ${fmt(b.mean, 1)} °C at ${fmt(b.P, 0)} % by weight of phenol.</p>` }; };
+  }
+});
+
+/* Experiment 6: Surface tension by drop count and drop weight (stalagmometer) */
+VL.register({
+  id: 'exp6', no: 6, title: 'Surface tension by stalagmometer', sub: 'Drop count method and drop weight method', topic: ['Interfacial phenomena', 'Surface tension'],
+  aim: 'To determine the surface tension of given liquids by the drop count method and the drop weight method using a stalagmometer.',
+  reference: 'More HN, Hajare AA, 2010: 104–106; Gaud RS, Gupta GD, 2009: 62–63; Mohanta GP, 2006: 31–33.',
+  theory: `<p>A stalagmometer is a glass capillary tube with a bulb in the middle and a capillary tip. A drop hangs from the tip until its weight just overcomes the surface tension holding it. The weight of a drop is therefore proportional to the surface tension, and the number of drops from a fixed volume depends on both density and surface tension.</p>
+  <div class="eq">Drop count: γ₁ = (n₂ ρ₁) / (n₁ ρ₂) × γ₂<br>Drop weight: γ₁ = (W₁ / W₂) × γ₂</div>
+  <p>γ₁, ρ₁, n₁, W₁ belong to the test liquid; γ₂, ρ₂, n₂, W₂ to water, the reference liquid. Surface tension is in mN/m (SI), equal to dyne/cm. It falls as temperature rises, and surfactants lower it.</p>
+  <div class="note">Benzene and toluene are flammable and toxic. Use them only in a fume hood with gloves in a real lab.</div>`,
+  chemicals: ['Distilled water (reference)', 'Ethanol', 'Acetone', 'Benzene', 'Toluene'],
+  apparatus: ['Stalagmometer', 'Beakers', 'Measuring cylinder', 'Electronic balance and weighing bottle'],
+  steps: ['<b>Drop count:</b> draw the liquid up into the clean stalagmometer past mark A and let it fall by gravity.', 'Count the drops while the meniscus passes from mark A to mark B. Repeat three times for each liquid, including water.', 'Calculate γ₁ = (n₂ρ₁)/(n₁ρ₂) γ₂, using water at the room temperature.', '<b>Drop weight:</b> collect 30 drops of the liquid in a pre-weighed bottle and weigh them. Repeat three times.', 'Calculate γ₁ = (W₁/W₂) γ₂ for each liquid.'],
+  viva: {
+    A: [['What is the principle of the drop count method?', 'For a fixed volume, the number of drops is inversely proportional to surface tension and directly proportional to density.'], ['Which instrument is used?', 'A stalagmometer (stalagmometer or drop pipette).'], ['What is the unit of surface tension in SI?', 'Newton per metre (N/m); practically mN/m.'], ['What formula compares surface tensions?', 'γ₁/γ₂ = (n₂ρ₁)/(n₁ρ₂).'], ['What is n in the formula?', 'The number of drops counted between the two marks for each liquid.']],
+    B: [['What is the reference liquid generally used?', 'Distilled water, whose surface tension is known at the working temperature.'], ['What property of the liquid affects drop formation?', 'Surface tension (and density, for the drop count method).'], ['Why must the stalagmometer be cleaned properly?', 'Grease or dirt changes the wetting of the tip and alters drop size and the surface tension.'], ['What happens to surface tension when temperature increases?', 'It decreases.'], ['What is the principle of operation of a stalagmometer?', 'A drop detaches when its weight equals the surface tension force around the tip: W = 2πrγ.']]
+  },
+  build(ctx) {
+    const { h, fmt } = VL;
+    const labT = Math.round((25 + ctx.noise(1.0)) * 10) / 10;
+    const LIQ = { water: ['Water', .997, 71.97, .15], ethanol: ['Ethanol', .789, 22.0, .09], acetone: ['Acetone', .785, 23.5, .12], benzene: ['Benzene', .874, 28.2, .13], toluene: ['Toluene', .862, 27.9, .11] };
+    const gam = k => LIQ[k][2] - LIQ[k][3] * (labT - 25), rho = k => LIQ[k][1];
+    const NW = 40 + Math.round(ctx.noise(1));
+    const nBase = k => NW * (rho(k) / rho('water')) * (gam('water') / gam(k));
+    const w30 = k => 1.5 * gam(k) / gam('water') * (1 + ctx.noise(0.003));
+    const dc = ctx.data.dc = {}, dw = ctx.data.dw = {}; Object.keys(LIQ).forEach(k => { dc[k] = []; dw[k] = []; });
+    let method = 'count', liq = 'water', stage = 0, busy = false;
+    const msg = h('div', { class: 'msg' }), box = h('div', { class: 'stepper' }), counter = h('div', { class: 'readout' }, '0');
+    const dropEl = h('circle', { cx: 100, cy: 232, r: 4, style: 'fill:var(--liquid);opacity:0' });
+    const meniscus = h('rect', { x: 88, y: 20, width: 24, height: 0, style: 'fill:var(--liquid)', class: 'liquid' });
+    const svg = h('svg', { viewBox: '0 0 200 280', role: 'img', 'aria-label': 'Stalagmometer' },
+      h('path', { d: 'M92 10 L92 60 Q70 80 70 110 Q70 140 92 160 L92 220 L96 232 L104 232 L108 220 L108 160 Q130 140 130 110 Q130 80 108 60 L108 10', fill: 'none', style: 'stroke:var(--glass);stroke-width:2.5' }), meniscus,
+      h('line', { x1: 80, x2: 120, y1: 50, y2: 50, style: 'stroke:var(--accent)' }), h('text', { x: 124, y: 54 }, 'A'), h('line', { x1: 80, x2: 120, y1: 170, y2: 170, style: 'stroke:var(--accent)' }), h('text', { x: 124, y: 174 }, 'B'), dropEl);
+    function drops(n, ms, done) {
+      busy = true; let i = 0; counter.textContent = '0';
+      const t = setInterval(() => { i++; counter.textContent = i; dropEl.style.opacity = 1; dropEl.setAttribute('cy', i % 2 ? 236 : 246); meniscus.setAttribute('height', Math.max(0, 140 * (1 - i / n)) + 0.1); if (i >= n) { clearInterval(t); dropEl.style.opacity = 0; busy = false; done(); } }, ms);
+    }
+    const sel = h('select', { class: 'inp', id: 'liq', 'aria-label': 'Liquid', onchange: e => { liq = e.target.value; stage = 0; msg.textContent = ''; counter.textContent = '0'; paint(); } }, Object.keys(LIQ).map(k => h('option', { value: k }, LIQ[k][0])));
+    const meth = h('div', { class: 'seg' });
+    function paint() {
+      meth.replaceChildren(h('button', { class: 'btn', 'aria-pressed': String(method === 'count'), onclick: () => { method = 'count'; stage = 0; counter.textContent = '0'; paint(); } }, 'Drop count'), h('button', { class: 'btn', 'aria-pressed': String(method === 'weight'), onclick: () => { method = 'weight'; stage = 0; counter.textContent = '0.0000'; paint(); } }, 'Drop weight'));
+      const runs = (method === 'count' ? dc : dw)[liq].length;
+      const st = (n, txt, label, fn) => h('div', { class: 'step' + (stage > n ? ' done' : '') }, h('div', { class: 't', html: txt }), h('button', { class: 'btn small', disabled: busy || stage !== n || runs >= 3, onclick: fn }, label));
+      if (method === 'count') box.replaceChildren(
+        st(0, `Rinse and fill the stalagmometer with <b>${LIQ[liq][0]}</b> above mark A`, 'Fill stalagmometer', () => { stage = 1; meniscus.setAttribute('height', 140); msg.textContent = ''; paint(); }),
+        st(1, 'Let the liquid fall and count the drops from mark A to mark B', 'Release and count', () => { const n = Math.max(3, Math.round(nBase(liq) * (1 + ctx.noise(0.006)))); drops(n, 22, () => { dc[liq].push(n); stage = 0; msg.className = 'msg ok'; msg.textContent = `Run ${dc[liq].length}: ${n} drops of ${LIQ[liq][0]}.`; paint(); ctx.refresh(); checkDone(); }); }),
+        h('div', { class: 'muted' }, `Runs recorded for ${LIQ[liq][0]}: ${runs} of 3.`));
+      else box.replaceChildren(
+        st(0, `Place a weighed empty bottle under the tip and fill with <b>${LIQ[liq][0]}</b>`, 'Fill stalagmometer', () => { stage = 1; msg.textContent = ''; paint(); }),
+        st(1, 'Collect exactly 30 drops in the bottle', 'Collect 30 drops', () => { drops(30, 40, () => { stage = 2; paint(); }); }),
+        st(2, 'Weigh the 30 drops on the electronic balance', 'Weigh', () => { const w = Math.round(w30(liq) * 1e4) / 1e4; counter.textContent = fmt(w, 4); dw[liq].push(w); stage = 0; msg.className = 'msg ok'; msg.textContent = `Run ${dw[liq].length}: 30 drops of ${LIQ[liq][0]} weigh ${fmt(w, 4)} g.`; paint(); ctx.refresh(); checkDone(); }),
+        h('div', { class: 'muted' }, `Runs recorded for ${LIQ[liq][0]}: ${runs} of 3.`));
+    }
+    const checkDone = () => { if (['water', 'ethanol', 'acetone'].every(k => dc[k].length >= 3 && dw[k].length >= 3)) ctx.done(); };
+    ctx.bench.append(h('div', { class: 'card' }, h('h3', {}, 'Stalagmometer'), h('div', { class: 'burette', style: { gridTemplateColumns: '150px minmax(0,1fr)' } }, svg, h('div', { style: { display: 'grid', gap: '10px' } }, h('div', { class: 'row-inputs' }, h('label', { for: 'liq' }, 'Liquid', sel)), meth, counter, box, msg))),
+      h('div', { class: 'card' }, h('h3', {}, 'Room conditions'), h('p', {}, `Room temperature: ${fmt(labT, 1)} °C. Surface tension of water at this temperature, γ₂ = ${fmt(gam('water'), 2)} mN/m (reference value for your calculation).`), h('p', { class: 'muted' }, 'Run water first, since every result is relative to it. Do at least water, ethanol and acetone for both methods.')));
+    paint();
+
+    const mean = a => a.length ? a.reduce((x, y) => x + y) / a.length : null;
+    const gC = k => { const n2 = mean(dc.water), n1 = mean(dc[k]); return n1 && n2 ? n2 * rho(k) / (n1 * rho('water')) * gam('water') : null; };
+    const gW = k => { const w2 = mean(dw.water), w1 = mean(dw[k]); return w1 && w2 ? w1 / w2 * gam('water') : null; };
+    const tbl = (d, gf, unit) => VL.table(['Liquid', 'Run 1', 'Run 2', 'Run 3', 'Mean', 'Density (g/ml)', 'γ (mN/m)', 'Literature'], Object.keys(LIQ).filter(k => d[k].length).map(k => [LIQ[k][0], ...[0, 1, 2].map(i => d[k][i] != null ? fmt(d[k][i], unit) : ''), fmt(mean(d[k]), unit === 0 ? 1 : 4), fmt(rho(k), 3), k === 'water' ? fmt(gam('water'), 2) + ' (ref)' : fmt(gf(k), 2), fmt(gam(k), 1)]));
+    ctx.render = () => {
+      const mk = (obj, gf, lab) => { const s = h('select', { class: 'inp', 'aria-label': lab + ' liquid' }, Object.keys(LIQ).filter(k => k !== 'water').map(k => h('option', { value: k }, LIQ[k][0]))); return [s, VL.check({ label: `γ by ${lab} (mN/m)`, tol: 0.03, expected: () => gf(s.value), unit: 'mN/m', working: lab === 'drop count' ? 'γ₁ = (n₂ ρ₁)/(n₁ ρ₂) × γ₂ using mean drop counts and densities.' : 'γ₁ = (W₁ / W₂) × γ₂ using mean weights of 30 drops.' })]; };
+      ctx.results.replaceChildren(
+        h('div', { class: 'card' }, h('h3', {}, 'Drop count method (number of drops, A to B)'), Object.keys(LIQ).some(k => dc[k].length) ? tbl(dc, gC, 0) : h('p', { class: 'muted' }, 'No drop count runs yet.')),
+        h('div', { class: 'card' }, h('h3', {}, 'Drop weight method (weight of 30 drops, g)'), Object.keys(LIQ).some(k => dw[k].length) ? tbl(dw, gW, 4) : h('p', { class: 'muted' }, 'No drop weight runs yet.')),
+        h('div', { class: 'cols' }, h('div', { class: 'card' }, h('h3', {}, 'Check: drop count'), ...mk(dc, gC, 'drop count')), h('div', { class: 'card' }, h('h3', {}, 'Check: drop weight'), ...mk(dw, gW, 'drop weight'))));
+    };
+    ctx.reportFn = () => { const any = Object.keys(LIQ).some(k => dc[k].length || dw[k].length); if (!any) return {}; const res = Object.keys(LIQ).filter(k => k !== 'water' && (gC(k) || gW(k))).map(k => `<li>${LIQ[k][0]}: ${gC(k) ? fmt(gC(k), 1) + ' mN/m by drop count' : ''}${gC(k) && gW(k) ? '; ' : ''}${gW(k) ? fmt(gW(k), 1) + ' mN/m by drop weight' : ''}</li>`).join(''); return { obs: h('div', {}, Object.keys(LIQ).some(k => dc[k].length) ? tbl(dc, gC, 0) : null, Object.keys(LIQ).some(k => dw[k].length) ? tbl(dw, gW, 4) : null), calc: `<p>Reference: water at ${fmt(labT, 1)} °C, γ₂ = ${fmt(gam('water'), 2)} mN/m. Drop count: γ₁ = (n₂ρ₁)/(n₁ρ₂) γ₂. Drop weight: γ₁ = (W₁/W₂) γ₂.</p>`, result: `<ul>${res}</ul>` }; };
+  }
+});
+
+/* Experiment 7: HLB value of a surfactant (glyceryl monostearate) by saponification */
+VL.register({
+  id: 'exp7', no: 7, title: 'HLB value of a surfactant', sub: 'Saponification number and acid number (Griffin’s method)', topic: ['Surfactants', 'HLB'],
+  aim: 'To determine the HLB value of a given surfactant (glyceryl monostearate) from its saponification number and the acid number of its fatty acid.',
+  reference: 'More HN, Hajare AA, 2010: 194–195; Gaud RS, Gupta GD, 2009: 71–72; Mohanta GP, 2006: 36–38.',
+  theory: `<p>A surfactant lowers the surface tension of water. The hydrophilic–lipophilic balance (HLB) is an arbitrary 0 to 20 scale of how polar or non-polar a surfactant is. Low HLB means oil soluble (e.g. Span 80, 4.3); high HLB means water soluble (e.g. Tween 20, 16.7). Griffin introduced the scale in 1949 and 1954.</p>
+  <div class="eq">HLB = 20 (1 − S / A)<br>S = saponification number of the ester, A = acid number of the fatty acid</div>
+  <p>Typical use by HLB: antifoaming agents 1.5–3; W/O emulsifiers 3–6; wetting agents 7–9; O/W emulsifiers 8–16; detergents 13–15; solubilizers 15–18.</p>
+  <p>Saponification number = mg of KOH to saponify 1 g of ester (found from a blank and sample titration with HCl). Acid number = mg of KOH to neutralize 1 g of fatty acid (titrated with NaOH).</p>
+  <div class="note">Alcohol and ether are highly flammable. Never heat them over a flame; use a water bath.</div>`,
+  chemicals: ['Glyceryl monostearate (GMS)', 'Stearic acid', '0.5 N alcoholic KOH', '0.5 N HCl', '0.1 N NaOH', 'Alcohol and ether', 'Phenolphthalein'],
+  apparatus: ['Round bottom flask', 'Reflux condenser', 'Boiling water bath', 'Burette, pipette, conical flask'],
+  steps: ['Prepare 0.5 N alcoholic KOH (about 4 g KOH in 3 to 5 ml water, made to 100 ml with alcohol), stand 24 h and decant the clear liquid.', '<b>Saponification number:</b> reflux 0.5 g GMS with 15 ml alcoholic KOH on a boiling water bath for 30 minutes. Reflux a blank (15 ml alcoholic KOH only) for 1 hour.', 'Cool both and titrate separately against 0.5 N HCl with phenolphthalein. End point: pink to colourless. Sample titre = v, blank = V.', '<b>Acid number:</b> dissolve 0.5 g stearic acid in 10 ml alcohol + 10 ml ether (warm gently on a water bath if needed).', 'Titrate with 0.1 N NaOH using phenolphthalein, colourless to pink.', 'Calculate S, A and HLB = 20 (1 − S/A).'],
+  viva: {
+    A: [['What does HLB stand for?', 'Hydrophilic–lipophilic balance.'], ['What is the range of the HLB scale?', '0 to 20 (Griffin’s scale for non-ionic surfactants).'], ['Who introduced the HLB system?', 'W. C. Griffin (1949, 1954).'], ['What type of surfactant has a low HLB value?', 'Lipophilic, oil-soluble surfactants (e.g. Span 80), used as W/O emulsifiers.'], ['What type of surfactant has a high HLB value?', 'Hydrophilic, water-soluble surfactants (e.g. Tween 20), used as O/W emulsifiers and solubilizers.']],
+    B: [['What HLB range suits O/W emulsifiers?', 'About 8 to 16.'], ['What HLB range suits W/O emulsifiers?', 'About 3 to 6.'], ['What is the formula for HLB by Griffin’s method for non-ionic surfactants?', 'HLB = 20 (1 − S/A), or HLB = 20 × (mass of hydrophilic part / total mass).'], ['Why is HLB important in formulation?', 'It guides the choice of emulsifier or surfactant blend to match the oil phase and the type of emulsion required.'], ['What is the HLB value of Tween 80?', 'About 15.']]
+  },
+  build(ctx) {
+    const { h, fmt } = VL;
+    const S0 = 161 + ctx.noise(1.5), A0 = 198 + ctx.noise(1.2), B0 = 15 * (1 + ctx.noise(0.004));
+    const P = ctx.data.p = { blank: { V: null }, sample: { V: null, w: null }, acid: { V: null, w: null } };
+    let part = 'blank', st = { blank: 0, sample: 0, acid: 0 }, busy = false;
+    const msg = h('div', { class: 'msg' }), box = h('div', { class: 'stepper' }), seg = h('div', { class: 'seg' });
+    const IND_HCl = { name: 'pink to colourless', from: '#e0328f', to: 'var(--liquid)', mode: 'vanish' };
+    const tit = VL.titration(ctx.bench, { title: 'Titration', onRecord: v => { P[part].V = v; msg.className = 'msg ok'; msg.textContent = 'Stored.'; paint(); ctx.refresh(); if (P.blank.V != null && P.sample.V != null && P.acid.V != null) ctx.done(); } });
+    function work(label, then) { busy = true; msg.className = 'msg'; msg.textContent = label + '…'; paint(); setTimeout(() => { busy = false; then(); paint(); }, 800); }
+    function paint() {
+      const s = st[part], done = P[part].V != null;
+      seg.replaceChildren(...[['blank', '1. Blank'], ['sample', '2. Saponification (GMS)'], ['acid', '3. Acid number']].map(([k, l]) => h('button', { class: 'btn', 'aria-pressed': String(part === k), onclick: () => { part = k; tit.reset(); msg.textContent = ''; paint(); } }, l + (P[k].V != null ? ' ✓' : ''))));
+      const stp = (n, t, l, fn) => h('div', { class: 'step' + (s > n ? ' done' : '') }, h('div', { class: 't', html: t }), h('button', { class: 'btn small', disabled: busy || s !== n || done, onclick: fn }, l));
+      const next = () => { st[part]++; };
+      if (part === 'blank') box.replaceChildren(
+        stp(0, 'Reflux 15 ml of 0.5 N alcoholic KOH on a boiling water bath for 1 hour', 'Reflux 1 hour', () => work('Refluxing for 1 hour', next)),
+        stp(1, 'Cool to room temperature, add phenolphthalein (pink) and fill the burette with 0.5 N HCl', 'Set up titration', () => { next(); tit.setup({ end: B0, titrant: '0.5 N HCl', sample: 'blank, 15 ml alcoholic KOH + phenolphthalein', indicator: IND_HCl }); paint(); }));
+      else if (part === 'sample') box.replaceChildren(
+        stp(0, 'Weigh about 0.5 g glyceryl monostearate accurately', 'Weigh GMS', () => { P.sample.w = Math.round((0.5 + ctx.noise(0.003)) * 1000) / 1000; msg.className = 'msg ok'; msg.textContent = `GMS weighed: ${fmt(P.sample.w, 3)} g`; next(); paint(); }),
+        stp(1, 'Add 15 ml alcoholic KOH and reflux on the boiling water bath for 30 minutes', 'Reflux 30 min', () => work('Refluxing for 30 minutes', next)),
+        stp(2, 'Cool, add phenolphthalein and titrate with 0.5 N HCl', 'Set up titration', () => { next(); tit.setup({ end: B0 - S0 * P.sample.w / (56.1 * 0.5), titrant: '0.5 N HCl', sample: 'saponified GMS + phenolphthalein', indicator: IND_HCl }); paint(); }));
+      else box.replaceChildren(
+        stp(0, 'Weigh about 0.5 g stearic acid accurately', 'Weigh stearic acid', () => { P.acid.w = Math.round((0.5 + ctx.noise(0.003)) * 1000) / 1000; msg.className = 'msg ok'; msg.textContent = `Stearic acid weighed: ${fmt(P.acid.w, 3)} g`; next(); paint(); }),
+        stp(1, 'Dissolve in 10 ml alcohol + 10 ml ether, warming on a water bath (no flame)', 'Dissolve', () => work('Warming gently', next)),
+        stp(2, 'Add phenolphthalein and titrate with 0.1 N NaOH', 'Set up titration', () => { next(); tit.setup({ end: A0 * P.acid.w / (56.1 * 0.1), titrant: '0.1 N NaOH', sample: 'stearic acid in alcohol–ether + phenolphthalein', indicator: { name: 'colourless to pink', from: 'var(--liquid)', to: '#e0328f', mode: 'appear' } }); paint(); }));
+    }
+    ctx.bench.prepend(h('div', { class: 'card' }, h('h3', {}, 'Sample preparation'), seg, h('div', { style: { height: '10px' } }), box, msg));
+    paint();
+
+    const calc = () => { const p = P; const S = p.blank.V != null && p.sample.V != null ? (p.blank.V - p.sample.V) * 0.5 * 56.1 / p.sample.w : null, A = p.acid.V != null ? p.acid.V * 0.1 * 56.1 / p.acid.w : null; return { S, A, hlb: S != null && A != null ? 20 * (1 - S / A) : null }; };
+    const cls = x => x < 3 ? 'antifoaming agent' : x < 6 ? 'W/O emulsifier' : x < 9 ? 'wetting and spreading agent' : x < 13 ? 'O/W emulsifier' : x < 15 ? 'detergent' : 'solubilizing agent';
+    const scale = x => { const W = 520, bands = [[1.5, 3, 'Antifoam'], [3, 6, 'W/O emulsifier'], [7, 9, 'Wetting'], [8, 16, 'O/W emulsifier'], [13, 15, 'Detergent'], [15, 18, 'Solubilizer']]; const sx = v => 20 + v / 20 * (W - 40); const g = h('svg', { viewBox: `0 0 ${W} 170` }); bands.forEach(([a, b, l], i) => { const y = 14 + (i % 3) * 22; g.append(h('rect', { x: sx(a), y, width: sx(b) - sx(a), height: 16, rx: 3, style: `fill:${VL.COLORS[i % 4]};opacity:.35` }), h('text', { x: sx(a) + 4, y: y + 12 }, l)); }); g.append(h('line', { class: 'ax', x1: sx(0), x2: sx(20), y1: 100, y2: 100 })); for (let v = 0; v <= 20; v += 2) g.append(h('line', { class: 'ax', x1: sx(v), x2: sx(v), y1: 100, y2: 106 }), h('text', { x: sx(v), y: 120, 'text-anchor': 'middle' }, v)); if (x != null) g.append(h('line', { x1: sx(x), x2: sx(x), y1: 8, y2: 100, style: 'stroke:var(--accent);stroke-width:3' }), h('text', { class: 'lbl', x: sx(x), y: 146, 'text-anchor': 'middle' }, 'HLB ' + fmt(x, 1))); return g; };
+    ctx.render = () => {
+      const c = calc(), p = P;
+      ctx.results.replaceChildren(
+        h('div', { class: 'card' }, h('h3', {}, 'Observations'), VL.table(['Measurement', 'Weight (g)', 'Titre (ml)'], [['Blank (0.5 N HCl), V', '–', fmt(p.blank.V, 2)], ['GMS sample (0.5 N HCl), v', fmt(p.sample.w, 3), fmt(p.sample.V, 2)], ['Stearic acid (0.1 N NaOH)', fmt(p.acid.w, 3), fmt(p.acid.V, 2)]])),
+        h('div', { class: 'card' }, h('h3', {}, 'Calculations'), h('div', { class: 'eq', html: 'S = (V − v) × N<sub>HCl</sub> × 56.1 / weight of GMS<br>A = V<sub>NaOH</sub> × N<sub>NaOH</sub> × 56.1 / weight of acid<br>HLB = 20 (1 − S / A)' }),
+          c.S != null ? h('p', {}, `Saponification number S = ${fmt(c.S, 1)} mg KOH/g.`) : null, c.A != null ? h('p', {}, `Acid number A = ${fmt(c.A, 1)} mg KOH/g.`) : null,
+          c.hlb != null ? h('p', {}, h('b', {}, `HLB = ${fmt(c.hlb, 2)}`), ` : ${cls(c.hlb)}.`) : h('p', { class: 'muted' }, 'Complete all three titrations to get the HLB.'), scale(c.hlb)),
+        h('div', { class: 'card' }, h('h3', {}, 'Check your calculation'),
+          VL.check({ label: 'Saponification number S (mg KOH/g)', tol: 0.03, expected: () => c.S, working: 'S = (V − v) × 0.5 × 56.1 / w' }), VL.check({ label: 'Acid number A (mg KOH/g)', tol: 0.03, expected: () => c.A, working: 'A = V × 0.1 × 56.1 / w' }), VL.check({ label: 'HLB', tol: 0, abs: 0.25, expected: () => c.hlb, working: 'HLB = 20 (1 − S/A)' })));
+    };
+    ctx.reportFn = () => { const c = calc(), p = P; if (p.blank.V == null && p.sample.V == null && p.acid.V == null) return {}; return { obs: VL.table(['Measurement', 'Weight (g)', 'Titre (ml)'], [['Blank, V (0.5 N HCl)', '–', fmt(p.blank.V, 2)], ['GMS, v (0.5 N HCl)', fmt(p.sample.w, 3), fmt(p.sample.V, 2)], ['Stearic acid (0.1 N NaOH)', fmt(p.acid.w, 3), fmt(p.acid.V, 2)]]), calc: '<p>S = (V − v) × N × 56.1 / w; A = V × N × 56.1 / w; HLB = 20 (1 − S/A).</p>', result: c.hlb != null ? `<p>Saponification number = ${fmt(c.S, 1)}; acid number = ${fmt(c.A, 1)}. The HLB value of the surfactant is ${fmt(c.hlb, 2)} (${cls(c.hlb)}).</p>` : '' }; };
+  }
+});
+
+/* Experiment 8: Freundlich and Langmuir constants, adsorption of acetic acid on charcoal */
+VL.register({
+  id: 'exp8', no: 8, title: 'Freundlich and Langmuir constants', sub: 'Adsorption of acetic acid on activated charcoal', topic: ['Adsorption', 'Isotherms'],
+  aim: 'Determination of Freundlich and Langmuir constants using activated charcoal, and estimation of its monolayer capacity and specific surface area.',
+  reference: 'More HN, Hajare AA. Practical Physical Pharmacy, Career Publications, 2010: 57–59.',
+  theory: `<p>Adsorption is a surface phenomenon: the adsorbate sticks to the surface of the adsorbent. Two isotherms are used to describe adsorption from solution at constant temperature.</p>
+  <div class="eq">Freundlich: x/m = k C<sub>e</sub><sup>1/n</sup>, so log(x/m) = log k + (1/n) log C<sub>e</sub><br>Langmuir: C<sub>e</sub>/(x/m) = 1/(b·y<sub>m</sub>) + C<sub>e</sub>/y<sub>m</sub></div>
+  <p>Langmuir assumes active sites on the surface, monolayer adsorption, and dynamic equilibrium between adsorbed and free molecules. y<sub>m</sub> is the monolayer capacity (g of adsorbate per g of adsorbent). The specific surface area follows from y<sub>m</sub>:</p>
+  <div class="eq">S = (y<sub>m</sub> / M) × N × A<br>N = 6.022×10<sup>23</sup>, M = 60 (acetic acid), A = cross-section of one acetic acid molecule</div>
+  <div class="note">The manual quotes A = 16×10<sup>−16</sup> cm² in the introduction and 18×10<sup>−16</sup> cm² in the calculation. You can change A in the results tab; the lab starts with 18.</div>`,
+  chemicals: ['Activated charcoal', '0.5 N acetic acid', '0.2 N NaOH', 'Phenolphthalein', 'Distilled water'],
+  apparatus: ['Reagent bottles', 'Burette', 'Pipette', 'Funnels and filter paper', 'Water bath', 'Conical flasks'],
+  steps: ['Standardize the acetic acid: titrate 10 ml against 0.2 N NaOH (colourless to pink) to find N<sub>0</sub>.', 'Prepare five dry bottles with acid + water volumes: 50+0, 40+10, 30+20, 20+30, 10+40 ml, so that N<sub>1</sub> = N<sub>0</sub> × 1, 0.8, 0.6, 0.4, 0.2.', 'Add 1 g activated charcoal to each bottle and swirl for 40 minutes at room temperature.', 'Filter through dry filter paper and titrate 10 ml of each filtrate with 0.2 N NaOH to get N<sub>2</sub>.', 'Calculate x = 3(N<sub>1</sub> − N<sub>2</sub>), x/m, C<sub>e</sub> = 60 N<sub>2</sub>, and plot both isotherms.'],
+  viva: {
+    A: [['What is the purpose of this experiment?', 'To find the Freundlich and Langmuir constants, monolayer capacity and surface area of charcoal from adsorption of acetic acid.'], ['Which adsorbent is used?', 'Activated charcoal.'], ['Name the two adsorption isotherms studied.', 'Freundlich and Langmuir isotherms.'], ['Write the Freundlich isotherm equation.', 'x/m = k C^(1/n).'], ['Write the linear form of Freundlich isotherm.', 'log(x/m) = log k + (1/n) log C.']],
+    B: [['Write the Langmuir adsorption isotherm equation.', 'C/(x/m) = 1/(b·ym) + C/ym.'], ['What does x/m represent?', 'Mass of adsorbate adsorbed per unit mass of adsorbent at equilibrium.'], ['What does C represent in adsorption isotherms?', 'The equilibrium concentration of the adsorbate in solution.'], ['Which plot verifies the Freundlich isotherm?', 'log(x/m) against log C, a straight line.'], ['Which plot verifies the Langmuir isotherm?', 'C/(x/m) against C, a straight line with slope 1/ym.']]
+  },
+  build(ctx) {
+    const { h, fmt } = VL;
+    const N0 = 0.5 * (1 + ctx.noise(0.01)), ym = 0.20 * (1 + ctx.noise(0.03)), bb = 0.05 * (1 + ctx.noise(0.04));
+    const fr = [1, 0.8, 0.6, 0.4, 0.2], water = [0, 10, 20, 30, 40], acid = [50, 40, 30, 20, 10];
+    const N2t = i => { const N1 = N0 * fr[i]; return VL.bisect(n => N1 - (ym * bb * 60 * n / (1 + bb * 60 * n)) / 3 - n, 0.0001, N1); };
+    const D = ctx.data; D.N0m = null; D.bot = fr.map(() => ({ V: null })); let stage = 0, cur = 0, mode = 'std'; D.A = 18;
+    const msg = h('div', { class: 'msg' }), box = h('div', { class: 'stepper' }), bseg = h('div', { class: 'seg' });
+    const tit = VL.titration(ctx.bench, { title: 'Titration with 0.2 N NaOH', onRecord: v => { if (mode === 'std') { D.N0m = 0.2 * v / 10; msg.className = 'msg ok'; msg.textContent = `Exact normality of the acid N₀ = 0.2 × ${fmt(v, 2)} / 10 = ${fmt(D.N0m, 4)} N.`; stage = Math.max(stage, 1); } else { D.bot[cur].V = v; msg.className = 'msg ok'; msg.textContent = `Bottle ${cur + 1} stored.`; if (D.bot.every(b => b.V != null)) ctx.done(); } paint(); ctx.refresh(); } });
+    function paint() {
+      const st = (n, t, l, fn) => h('div', { class: 'step' + (stage > n ? ' done' : '') }, h('div', { class: 't', html: t }), h('button', { class: 'btn small', disabled: stage !== n, onclick: fn }, l));
+      bseg.replaceChildren(...fr.map((f, i) => h('button', { class: 'btn', disabled: stage < 4, 'aria-pressed': String(mode === 'bot' && cur === i), onclick: () => { cur = i; mode = 'bot'; tit.setup({ end: N2t(i) * 10 / 0.2, titrant: '0.2 N NaOH', sample: `10 ml filtrate from bottle ${i + 1} + phenolphthalein`, indicator: { name: 'colourless to pink', from: 'var(--liquid)', to: '#e0328f' } }); paint(); } }, `Bottle ${i + 1}` + (D.bot[i].V != null ? ' ✓' : ''))));
+      box.replaceChildren(
+        st(0, 'Standardize the acid: 10 ml of the given acetic acid with phenolphthalein', 'Set up standardization', () => { mode = 'std'; tit.setup({ end: N0 * 10 / 0.2, titrant: '0.2 N NaOH', sample: '10 ml acetic acid + phenolphthalein', indicator: { name: 'colourless to pink', from: 'var(--liquid)', to: '#e0328f' } }); paint(); }),
+        st(1, 'Prepare five dry bottles (see the table below) in the water bath at room temperature', 'Prepare bottles', () => { stage = 2; paint(); }),
+        st(2, 'Add 1 g activated charcoal to each bottle and swirl for 40 minutes', 'Add charcoal, swirl 40 min', () => { stage = 3; msg.className = 'msg'; msg.textContent = 'Adsorption equilibrium reached.'; paint(); }),
+        st(3, 'Filter each bottle through dry filter paper into dry flasks', 'Filter', () => { stage = 4; msg.textContent = 'Five clear filtrates ready. Titrate each one.'; paint(); }),
+        h('div', { class: 'step' }, h('div', { class: 't' }, 'Titrate 10 ml of each filtrate'), bseg));
+      if (stage >= 2) table.replaceChildren(VL.table(['Bottle', 'Water (ml)', 'Acid (ml)', 'N<sub>1</sub> (N)'], fr.map((f, i) => [i + 1, water[i], acid[i], D.N0m ? fmt(D.N0m * f, 4) : '–'])));
+    }
+    const table = h('div');
+    ctx.bench.prepend(h('div', { class: 'card' }, h('h3', {}, 'Adsorption of acetic acid on charcoal'), box, msg, table));
+    paint();
+
+    const rows = () => D.bot.map((b, i) => { if (b.V == null || !D.N0m) return null; const N1 = D.N0m * fr[i], N2 = 0.2 * b.V / 10, Ce = N2 * 60, x = 3 * (N1 - N2), xm = x / 1; return { i, N1, V: b.V, N2, d: N1 - N2, Ce, x, xm, lc: Math.log10(Ce), lx: xm > 0 ? Math.log10(xm) : NaN, lang: Ce / xm }; }).filter(Boolean).filter(r => r.xm > 0);
+    const fits = r => { if (r.length < 3) return null; const f = VL.linfit(r.map(x => [x.lc, x.lx])), l = VL.linfit(r.map(x => [x.Ce, x.lang])); const ymf = 1 / l.m; return { f, l, k: Math.pow(10, f.c), n: 1 / f.m, ym: ymf, b: l.m / l.c }; };
+    const S = (ymv, A) => ymv / 60 * 6.022e23 * A * 1e-16;
+    ctx.render = () => {
+      const r = rows(), ft = fits(r), g1 = h('div'), g2 = h('div');
+      const Ain = h('input', { id: 'area', class: 'inp', type: 'number', step: '1', value: D.A, onchange: e => { D.A = +e.target.value || 18; ctx.render(); } });
+      ctx.results.replaceChildren(
+        h('div', { class: 'card' }, h('h3', {}, 'Observation table'), r.length ? VL.table(['Bottle', 'N<sub>1</sub>', 'T.R (ml)', 'N<sub>2</sub>', 'N<sub>1</sub>−N<sub>2</sub>', 'C<sub>e</sub> (g/l)', 'x (g)', 'x/m (g/g)', 'log C<sub>e</sub>', 'log x/m', 'C<sub>e</sub>/(x/m)'], r.map(x => [x.i + 1, fmt(x.N1, 4), fmt(x.V, 2), fmt(x.N2, 4), fmt(x.d, 4), fmt(x.Ce, 2), fmt(x.x, 4), fmt(x.xm, 4), fmt(x.lc, 3), fmt(x.lx, 3), fmt(x.lang, 1)])) : h('p', { class: 'muted' }, 'Standardize the acid and titrate at least three filtrates.'), D.N0m ? h('p', { class: 'muted' }, `N₀ = ${fmt(D.N0m, 4)} N. x = 3 (N₁ − N₂) g per 50 ml, since (N₁−N₂) × 60 × 50 / 1000; m = 1 g.`) : null),
+        h('div', { class: 'cols' }, h('div', { class: 'card' }, h('h3', {}, 'Freundlich: log x/m against log C'), g1), h('div', { class: 'card' }, h('h3', {}, 'Langmuir: C/(x/m) against C'), g2)),
+        h('div', { class: 'card' }, h('h3', {}, 'Constants'), ft ? h('div', {}, h('p', {}, `Freundlich: slope 1/n = ${fmt(ft.f.m, 3)} (n = ${fmt(ft.n, 2)}), k = ${fmt(ft.k, 4)}; r² = ${fmt(ft.f.r2, 4)}.`), h('p', {}, `Langmuir: slope = ${fmt(ft.l.m, 3)}, so monolayer capacity yₘ = 1/slope = ${fmt(ft.ym, 4)} g/g; b = slope/intercept = ${fmt(ft.b, 4)} l/g; r² = ${fmt(ft.l.r2, 4)}.`),
+          h('div', { class: 'row-inputs' }, h('label', { for: 'area' }, 'A of acetic acid (×10⁻¹⁶ cm²)', Ain)), h('p', {}, `Specific surface area = (yₘ/M) × N × A = ${(S(ft.ym, D.A)).toExponential(3)} cm²/g = ${fmt(S(ft.ym, D.A) / 1e4, 0)} m²/g.`),
+          VL.check({ label: 'Monolayer capacity yₘ (g/g)', tol: 0.06, expected: () => ft.ym, working: 'Plot C<sub>e</sub>/(x/m) against C<sub>e</sub>. yₘ = 1 / slope.' }), VL.check({ label: 'Freundlich slope (1/n)', tol: 0, abs: 0.05, expected: () => ft.f.m, working: 'Slope of log(x/m) against log C<sub>e</sub>.' }), VL.check({ label: 'Specific surface area (m²/g)', tol: 0.08, expected: () => S(ft.ym, D.A) / 1e4, unit: 'm²/g', working: 'S = (yₘ / 60) × 6.022×10<sup>23</sup> × A (cm²/g), then divide by 10<sup>4</sup> for m²/g.' })) : h('p', { class: 'muted' }, 'Needs at least three filtrates.')));
+      if (ft) {
+        const lineOf = (xs, m, c) => { const a = Math.min(...xs), b = Math.max(...xs); return [{ name: 'Best fit', pts: [[a, m * a + c], [b, m * b + c]], dashed: true }]; };
+        VL.graph(g1, { xlabel: 'log C(e)', ylabel: 'log (x/m)', series: [{ name: 'Data', pts: r.map(x => [x.lc, x.lx]) }], lines: lineOf(r.map(x => x.lc), ft.f.m, ft.f.c) });
+        VL.graph(g2, { xlabel: 'C(e) (g/l)', ylabel: 'C(e)/(x/m)', xmin: 0, ymin: 0, series: [{ name: 'Data', pts: r.map(x => [x.Ce, x.lang]), color: 'var(--teal)' }], lines: lineOf([0, ...r.map(x => x.Ce)], ft.l.m, ft.l.c) });
+      } else { g1.textContent = 'Graph appears after three bottles.'; g2.textContent = ''; }
+    };
+    ctx.reportFn = () => { const r = rows(), ft = fits(r); if (!r.length) return {}; return { obs: VL.table(['Bottle', 'N1', 'T.R', 'N2', 'N1-N2', 'Ce (g/l)', 'x', 'x/m', 'log Ce', 'log x/m'], r.map(x => [x.i + 1, fmt(x.N1, 4), fmt(x.V, 2), fmt(x.N2, 4), fmt(x.d, 4), fmt(x.Ce, 2), fmt(x.x, 4), fmt(x.xm, 4), fmt(x.lc, 3), fmt(x.lx, 3)])), calc: '<p>Ce = 60 N2; x = 3(N1 − N2); Langmuir: Ce/(x/m) = 1/(b ym) + Ce/ym; S = (ym/M) N A.</p>', result: ft ? `<p>Freundlich: 1/n = ${fmt(ft.f.m, 3)}, k = ${fmt(ft.k, 4)}. Langmuir: monolayer capacity y<sub>m</sub> = ${fmt(ft.ym, 4)} g/g, b = ${fmt(ft.b, 4)} l/g. Specific surface area of charcoal = ${fmt(S(ft.ym, D.A) / 1e4, 0)} m²/g (A = ${D.A}×10<sup>−16</sup> cm²).</p>` : '' }; };
+  }
+});
+
+/* Experiment 9: CMC of a surfactant (sodium lauryl sulphate) with a stalagmometer */
+VL.register({
+  id: 'exp9', no: 9, title: 'CMC of a surfactant', sub: 'Sodium lauryl sulphate by stalagmometer drop count', topic: ['Surfactants', 'Micelles', 'CMC'],
+  aim: 'To determine the critical micelle concentration (CMC) of a surfactant (sodium lauryl sulphate) by using a stalagmometer.',
+  reference: 'More HN, Hajare AA, 2010: 156–157; Gaud RS, Gupta GD, 2009: 75–76; Mohanta GP, 2006: 39–40.',
+  theory: `<p>A surfactant (amphiphile) has a polar head and a non-polar tail. It adsorbs at the air–water interface and lowers surface tension. As concentration rises the surface fills up, and surface tension falls steeply.</p>
+  <p>At the <b>critical micelle concentration (CMC)</b> the surface is saturated and molecules start to self-associate into micelles in the bulk. Above the CMC, surface tension stays almost constant. Plotting surface tension against concentration (or its logarithm) gives two straight segments that meet at the CMC.</p>
+  <div class="eq">γ₁ = (n₂ ρ₁) / (n₁ ρ₂) × γ₂  (drop count against water)</div>
+  <p>The CMC marks the concentration where properties such as surface tension, conductivity and solubilizing power change abruptly. It matters for solubilizing poorly soluble drugs in micelles.</p>`,
+  chemicals: ['Sodium lauryl sulphate (SLS)', 'Distilled water'],
+  apparatus: ['Stalagmometer', 'Analytical balance', 'Volumetric flasks'],
+  steps: ['Prepare a stock solution of SLS in distilled water (50 mM in this lab).', 'Prepare solutions of increasing strength from the stock by dilution (the manual lists 5, 10, 15 to 50; add lower strengths below about 10 to find the break).', 'Determine the drop count of distilled water first, then of each solution, three times each, between marks A and B.', 'Calculate the surface tension of each solution with the drop count formula.', 'Plot surface tension (y) against concentration (x) and read the concentration where the curve changes slope: the CMC.'],
+  viva: {
+    A: [['What does CMC stand for?', 'Critical micelle concentration.'], ['What is the principle of this experiment?', 'Surface tension falls with surfactant concentration until micelles form, then stays almost constant.'], ['Which instrument is used?', 'A stalagmometer.'], ['What happens to surface tension when surfactant concentration increases?', 'It decreases up to the CMC and then remains nearly constant.'], ['What is formed at CMC?', 'Micelles (aggregates of surfactant molecules).']],
+    B: [['Give one example of a surfactant used in this experiment.', 'Sodium lauryl sulphate (sodium dodecyl sulphate).'], ['Which method measures surface tension here?', 'The drop count method with a stalagmometer.'], ['What is the unit of surface tension in SI?', 'N/m (mN/m in practice).'], ['What is plotted to determine CMC graphically?', 'Surface tension against concentration (or log concentration).'], ['What is the significance of determining CMC?', 'It shows the minimum surfactant needed for micellar solubilization, detergency and emulsification.']]
+  },
+  build(ctx) {
+    const { h, fmt } = VL;
+    const CMC = 8.2 * (1 + ctx.noise(0.025)), C0 = 1.0, AA = 33.5 / Math.log(1 + 8.2 / C0);
+    const gW = 71.97, gam = c => c <= CMC ? 71.97 - AA * Math.log(1 + c / C0) : 71.97 - AA * Math.log(1 + CMC / C0) - 0.04 * (c - CMC);
+    const rho = c => 0.997 + 0.00028 * c; const NW = 40 + Math.round(ctx.noise(1));
+    const nFor = c => NW * (rho(c) / rho(0)) * (gW / gam(c)) * (1 + ctx.noise(0.005));
+    const sols = ctx.data.sols = [{ c: 0, runs: [] }]; let fast = false, busy = false, cur = null;
+    const msg = h('div', { class: 'msg' }), counter = h('div', { class: 'readout' }, '0'), list = h('div', { class: 'seg' });
+    const inp = h('input', { id: 'conc', class: 'inp', type: 'number', min: '0.2', max: '50', step: '0.1', placeholder: 'mM', 'aria-label': 'Concentration in mM' });
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    async function count(n) { if (fast) { counter.textContent = n; return; } for (let i = 1; i <= n; i++) { counter.textContent = i; await sleep(9); } }
+    async function run3(s) { if (busy) return; busy = true; paint(); for (let k = 0; k < 3; k++) { const n = Math.max(3, Math.round(nFor(s.c))); await count(n); s.runs.push(n); } busy = false; msg.className = 'msg ok'; msg.textContent = `${s.c ? s.c + ' mM' : 'Water'}: ${s.runs.join(', ')} drops.`; paint(); ctx.refresh(); if (sols.filter(x => x.c && x.runs.length).length >= 8 && sols[0].runs.length) ctx.done(); }
+    function add(c) { c = Math.round(c * 100) / 100; if (!(c >= 0.2 && c <= 50)) { msg.className = 'msg warn'; msg.textContent = 'Choose a concentration from 0.2 to 50 mM.'; return; } if (sols.some(s => s.c === c)) { msg.className = 'msg warn'; msg.textContent = 'That solution already exists.'; return; } sols.push({ c, runs: [] }); sols.sort((a, b) => a.c - b.c); cur = c; msg.className = 'msg ok'; msg.textContent = `Prepare ${c} mM: dilute ${fmt(c * 25 / 50, 2)} ml of 50 mM stock to 25 ml with distilled water.`; paint(); }
+    function paint() {
+      list.replaceChildren(...sols.map(s => h('button', { class: 'btn', 'aria-pressed': String(cur === s.c), onclick: () => { cur = s.c; paint(); } }, (s.c ? s.c + ' mM' : 'Water') + (s.runs.length ? ' ✓' : ''))));
+      const s = sols.find(x => x.c === cur);
+      go.disabled = !s || busy || s.runs.length >= 3; go.textContent = s ? `Count drops × 3 for ${s.c ? s.c + ' mM' : 'water'}` : 'Choose a solution';
+    }
+    const go = h('button', { class: 'btn primary', onclick: () => { const s = sols.find(x => x.c === cur); if (s) { if (s.c && !sols[0].runs.length) { msg.className = 'msg warn'; msg.textContent = 'Count the water reference first.'; return; } run3(s); } } });
+    const addMany = arr => () => arr.forEach(add);
+    ctx.bench.append(h('div', { class: 'card' }, h('h3', {}, 'Solutions and stalagmometer'), h('p', { class: 'muted' }, 'Count water first as the reference. Then prepare at least 8 strengths. SLS micelles form near the low end, so include values below 10 mM.'),
+      h('div', { class: 'row-inputs' }, h('label', { for: 'conc' }, 'New solution (mM)', inp), h('button', { class: 'btn', onclick: () => add(parseFloat(inp.value)) }, 'Prepare solution'), h('button', { class: 'btn', onclick: addMany([1, 2, 4, 6, 8]) }, 'Add 1, 2, 4, 6, 8'), h('button', { class: 'btn', onclick: addMany([10, 15, 20, 30, 40, 50]) }, 'Add 10 to 50 (manual)')),
+      h('div', { style: { height: '10px' } }), list, h('div', { style: { height: '10px' } }), h('div', { class: 'row-inputs' }, go, h('label', {}, 'Skip animation', h('input', { type: 'checkbox', id: 'fast', style: { width: 'auto' }, onchange: e => { fast = e.target.checked; } })), counter), msg));
+    cur = 0; paint();
+
+    const mean = a => a.reduce((x, y) => x + y) / a.length;
+    const calc = () => { const w = sols[0].runs.length ? mean(sols[0].runs) : null; if (!w) return []; return sols.filter(s => s.c && s.runs.length).map(s => { const n = mean(s.runs), r = rho(s.c), g = w * r / (n * rho(0)) * gW; return { c: s.c, runs: s.runs, n, rho: r, g }; }); };
+    const cmcFit = r => { if (r.length < 6) return null; const pts = r.map(x => [Math.log10(x.c), x.g]); let best = null; for (let k = 2; k <= pts.length - 2; k++) { const L = pts.slice(0, k), R = pts.slice(k), a = VL.linfit(L), b = VL.linfit(R); const sse = P => P.reduce((t, [x, y], i) => t, 0); const e = L.reduce((t, [x, y]) => t + (y - (a.m * x + a.c)) ** 2, 0) + R.reduce((t, [x, y]) => t + (y - (b.m * x + b.c)) ** 2, 0); if (Math.abs(a.m - b.m) > 1e-6 && (!best || e < best.e)) best = { e, a, b, x: (b.c - a.c) / (a.m - b.m), k }; } return best ? { ...best, cmc: Math.pow(10, best.x) } : null; };
+    ctx.render = () => {
+      const r = calc(), fit = cmcFit(r), g1 = h('div'), g2 = h('div');
+      ctx.results.replaceChildren(
+        h('div', { class: 'card' }, h('h3', {}, `Observation table (water: ${sols[0].runs.length ? sols[0].runs.join(', ') + ' drops' : 'not counted'}; γ water = ${gW} mN/m)`), r.length ? VL.table(['Conc. (mM)', 'Run 1', 'Run 2', 'Run 3', 'Mean n', 'Density', 'Surface tension (mN/m)'], r.map(x => [x.c, ...x.runs, fmt(x.n, 1), fmt(x.rho, 4), fmt(x.g, 2)])) : h('p', { class: 'muted' }, 'Count water and at least a few solutions on the bench.')),
+        h('div', { class: 'cols' }, h('div', { class: 'card' }, h('h3', {}, 'Surface tension against concentration'), g1), h('div', { class: 'card' }, h('h3', {}, 'Surface tension against log concentration'), g2)),
+        h('div', { class: 'card' }, h('h3', {}, 'CMC'), fit ? h('p', {}, `The two straight segments meet at log C = ${fmt(fit.x, 3)}, so CMC ≈ ${fmt(fit.cmc, 1)} mM (about ${fmt(fit.cmc * 0.2884, 2)} g/l). Literature for SLS in water: about 8 mM.`) : h('p', { class: 'muted' }, 'Needs at least 6 concentrations spread across the break.'), VL.check({ label: 'CMC read from your graph (mM)', tol: 0.25, expected: () => fit && fit.cmc, unit: 'mM', working: 'Fit one line to the falling points and one to the flat points on the γ against log C plot. The intersection is the CMC.' })));
+      VL.graph(g1, { xlabel: 'Concentration (mM)', ylabel: 'γ (mN/m)', xmin: 0, ymin: 30, series: [{ name: 'SLS', pts: r.map(x => [x.c, x.g]), line: true }], marks: fit ? [{ x: fit.cmc, y: fit.a.m * fit.x + fit.a.c, label: `CMC ${fmt(fit.cmc, 1)} mM` }] : [] });
+      const lines = fit ? [{ name: 'Falling segment', pts: [Math.log10(r[0].c), fit.x + 0.15].map(x => [x, fit.a.m * x + fit.a.c]), dashed: true }, { name: 'Plateau', pts: [fit.x - 0.15, Math.log10(r[r.length - 1].c)].map(x => [x, fit.b.m * x + fit.b.c]), dashed: true, color: 'var(--teal)' }] : [];
+      VL.graph(g2, { xlabel: 'log10 concentration (mM)', ylabel: 'γ (mN/m)', ymin: 30, series: [{ name: 'SLS', pts: r.map(x => [Math.log10(x.c), x.g]) }], lines });
+    };
+    ctx.reportFn = () => { const r = calc(), fit = cmcFit(r); if (!r.length) return {}; return { obs: VL.table(['Conc. (mM)', 'Run 1', 'Run 2', 'Run 3', 'Mean n', 'Density', 'γ (mN/m)'], r.map(x => [x.c, ...x.runs, fmt(x.n, 1), fmt(x.rho, 4), fmt(x.g, 2)])), calc: `<p>γ = (n₂ρ₁)/(n₁ρ₂) × γ₂ with n₂ = mean drops of water (${sols[0].runs.length ? fmt(mean(sols[0].runs), 1) : '–'}) and γ₂ = ${gW} mN/m.</p>`, result: fit ? `<p>The critical micelle concentration of sodium lauryl sulphate is about ${fmt(fit.cmc, 1)} mM (${fmt(fit.cmc * 0.2884, 2)} g/l), where surface tension stops falling at about ${fmt(fit.b.m * fit.x + fit.b.c, 1)} mN/m.</p>` : '' }; };
+  }
+});
+
+/* Experiment 10: PABA-caffeine complex by the solubility method */
+VL.register({
+  id: 'exp10', no: 10, title: 'PABA–caffeine complex', sub: 'Stability constant and donor:acceptor ratio by phase solubility', topic: ['Complexation', 'Phase solubility'],
+  aim: 'Determination of the stability constant and donor–acceptor ratio of the PABA–caffeine complex by the solubility method.',
+  reference: 'Subramanyam CVS. Laboratory Manual of Physical Pharmaceutics, Vallabh Prakashan, 2008: 72–78.',
+  theory: `<p>p-Aminobenzoic acid (PABA) and caffeine form a complex in solution through dipole–dipole forces or hydrogen bonding between the carbonyl groups of caffeine and the acidic hydrogen of PABA. The complex is more soluble than PABA, so the solubility of PABA rises as caffeine is added. At higher caffeine levels the less soluble complex precipitates and PABA solubility falls again.</p>
+  <div class="eq">PABA + caffeine ⇌ PABA·caffeine<br>Stoichiometric ratio = [caffeine in complex] / [PABA in complex]<br>Stability constant K = [PABA·caffeine] / ([PABA][caffeine])</div>
+  <p>Excess solid PABA keeps free PABA at its intrinsic solubility S₀ (the flask with no caffeine). Then [complex] = S<sub>total</sub> − S₀ and [caffeine free] = C<sub>total</sub> − [complex]. If K comes out constant across the rising part of the curve, the complex is 1:1.</p>
+  <div class="note">The manual lists caffeine concentrations as 0, 1, 2 … 8 “mol/l”. From 2 ml of 0.1 M stock in 20 ml the real values are 0.01, 0.02 … 0.08 mol/l (the table numbers are ×10⁻² mol/l). This lab uses the real values.</div>`,
+  chemicals: ['Distilled water', 'PABA (200 mg per flask)', 'Caffeine, anhydrous (1.949 g for 100 ml of 0.1 M stock)', '0.025 N sodium hydroxide', 'Phenolphthalein'],
+  apparatus: ['Volumetric flasks', 'Conical flasks', 'Pipette', 'Burette', 'Whatman filter paper'],
+  steps: ['Prepare 0.1 M caffeine stock (1.949 g in 100 ml) and 0.025 N NaOH.', 'In eight flasks mix caffeine stock and water as per the table (total 20 ml): 0+20, 2+18, 4+16, 6+14, 8+12, 10+10, 12+8, 16+4 ml.', 'Add 200 mg PABA (7.3×10⁻² mol/l) to each flask.', 'Shake all flasks for about 30 minutes to equilibrium, then filter.', 'Pipette 10 ml of each filtrate and titrate with 0.025 N NaOH using phenolphthalein (colourless to pink).', 'Calculate PABA concentration, plot PABA against caffeine concentration, and calculate K and the ratio.'],
+  viva: {
+    A: [['What is the full form of PABA?', 'p-Aminobenzoic acid.'], ['Which type of complex is formed between PABA and caffeine?', 'A molecular (donor–acceptor) complex held by hydrogen bonding and dipole–dipole forces.'], ['Which method is used to determine the stability constant?', 'The solubility (phase solubility) method of Higuchi and Connors.'], ['What acts as the donor in the PABA–caffeine complex?', 'Caffeine, through the electron-rich carbonyl oxygens and nitrogens. Many texts also describe PABA as the electron donor; state the convention your teacher uses.'], ['What acts as the acceptor in the PABA–caffeine complex?', 'PABA, through its acidic hydrogen (hydrogen-bond donor).']],
+    B: [['What does the stability constant (K) indicate?', 'The strength of the complex: a larger K means a more stable complex that forms more completely.'], ['What is plotted to determine the stability constant graphically?', 'Total PABA concentration (y) against total caffeine concentration (x). K = slope / (S₀ (1 − slope)).'], ['What is meant by donor–acceptor ratio?', 'The number of donor molecules bound to one acceptor molecule in the complex (stoichiometry).'], ['Which solvent is generally used in this experiment?', 'Distilled water.'], ['Why is the solubility of PABA measured in presence of caffeine?', 'Because complex formation changes PABA solubility, and that change measures how much complex forms.']]
+  },
+  build(ctx) {
+    const { h, fmt } = VL;
+    const S0 = 0.039 * (1 + ctx.noise(0.015)), K = 22 * (1 + ctx.noise(0.04)), a = K * S0 / (1 + K * S0), C1 = 0.045;
+    const St = C => { if (C <= C1) return S0 + a * C; return S0 + a * C1 - 0.45 * (C - C1); };
+    const ml = [0, 2, 4, 6, 8, 10, 12, 16];
+    const fl = ctx.data.fl = ml.map(v => ({ v, C: v * 0.1 / 20, stage: 0, V: null, V0: 0 }));
+    let cur = 0, stock = false;
+    const msg = h('div', { class: 'msg' }), box = h('div', { class: 'stepper' }), seg = h('div', { class: 'seg' });
+    const tit = VL.titration(ctx.bench, { title: 'Titration with 0.025 N NaOH', max: 50, onRecord: v => { fl[cur].V = v; msg.className = 'msg ok'; msg.textContent = `Flask ${cur + 1} titre stored.`; paint(); ctx.refresh(); if (fl.every(f => f.V != null)) ctx.done(); } });
+    function paint() {
+      const f = fl[cur];
+      seg.replaceChildren(...fl.map((x, i) => h('button', { class: 'btn', 'aria-pressed': String(i === cur), onclick: () => { cur = i; tit.reset(); paint(); } }, `${i + 1}: ${x.v} ml` + (x.V != null ? ' ✓' : ''))));
+      const st = (n, t, l, fn) => h('div', { class: 'step' + (f.stage > n ? ' done' : '') }, h('div', { class: 't', html: t }), h('button', { class: 'btn small', disabled: f.stage !== n || (n > 0 && !stock), onclick: fn }, l));
+      const nx = m => () => { f.stage++; msg.className = 'msg'; msg.textContent = m || ''; paint(); };
+      box.replaceChildren(
+        h('div', { class: 'step' + (stock ? ' done' : '') }, h('div', { class: 't' }, 'Weigh 1.949 g anhydrous caffeine into a 100 ml flask and make up: 0.1 M stock'), h('button', { class: 'btn small', disabled: stock, onclick: () => { stock = true; msg.className = 'msg ok'; msg.textContent = 'Caffeine stock (0.1 M) and 0.025 N NaOH are ready.'; paint(); } }, 'Prepare stocks')),
+        st(0, `Flask ${cur + 1}: <b>${f.v} ml</b> caffeine stock + <b>${20 - f.v} ml</b> water (caffeine = ${fmt(f.C, 3)} mol/l)`, 'Prepare flask', nx('Flask prepared.')),
+        st(1, 'Add 200 mg PABA (an excess, so solid remains)', 'Add PABA', nx('PABA added.')),
+        st(2, 'Shake for 30 minutes to reach equilibrium', 'Shake 30 min', nx('Equilibrium reached; some solid PABA remains.')),
+        st(3, 'Filter through Whatman paper', 'Filter', nx('Clear filtrate collected.')),
+        st(4, 'Pipette 10 ml of filtrate, add phenolphthalein and titrate', 'Set up titration', () => { f.stage++; tit.setup({ end: St(f.C) * (1 + ctx.noise(0.004)) * 10 / 0.025, titrant: '0.025 N NaOH', sample: `10 ml filtrate of flask ${cur + 1} + phenolphthalein`, indicator: { name: 'colourless to pink', from: 'var(--liquid)', to: '#e0328f' } }); paint(); }));
+    }
+    ctx.bench.prepend(h('div', { class: 'card' }, h('h3', {}, 'Eight flasks'), seg, h('div', { style: { height: '10px' } }), box, msg));
+    paint();
+
+    const rows = () => fl.filter(f => f.V != null).map(f => ({ ...f, P: 0.025 * f.V / 10 }));
+    const analyse = r => {
+      if (r.length < 6) return null;
+      const s0 = r[0].C === 0 ? r[0].P : null; if (s0 == null) return null;
+      let pk = 0; r.forEach((x, i) => { if (x.P > r[pk].P) pk = i; });
+      const rise = r.slice(0, pk); if (rise.length < 3) return { s0, pk, r };
+      const f = VL.linfit(rise.map(x => [x.C, x.P])), K1 = f.m / (s0 * (1 - f.m));
+      const per = rise.filter(x => x.C > 0).map(x => { const pc = x.P - s0, cf = x.C - pc; return { C: x.C, pc, cf, k11: pc / (s0 * cf), k12: pc / (s0 * cf * cf) }; });
+      const cv = a => { const m = a.reduce((p, q) => p + q) / a.length; return Math.sqrt(a.reduce((p, q) => p + (q - m) ** 2, 0) / a.length) / m; };
+      const cv11 = cv(per.map(p => p.k11)), cv12 = cv(per.map(p => p.k12));
+      return { s0, pk, f, K1, per, cv11, cv12, Kmean: per.reduce((p, q) => p + q.k11, 0) / per.length, ratio: cv11 <= cv12 ? '1:1' : '1:2' };
+    };
+    ctx.render = () => {
+      const r = rows(), an = analyse(r), g = h('div');
+      ctx.results.replaceChildren(
+        h('div', { class: 'card' }, h('h3', {}, 'Observation table'), r.length ? VL.table(['Flask', 'Caffeine (mol/l)', 'NaOH titre (ml)', 'PABA (mol/l)', 'PABA (g/l)'], r.map(x => [x.v === 0 ? '1 (0 ml)' : x.v + ' ml stock', fmt(x.C, 3), fmt(x.V, 2), fmt(x.P, 4), fmt(x.P * 137.13, 2)])) : h('p', { class: 'muted' }, 'Titrate all eight filtrates on the bench.'), h('p', { class: 'muted' }, 'PABA (mol/l) = 0.025 × titre / 10.')),
+        h('div', { class: 'card' }, h('h3', {}, 'Phase solubility diagram'), g, an && an.f ? h('p', {}, `The curve rises, peaks near ${fmt(r[an.pk].C, 3)} mol/l caffeine (${fmt(r[an.pk].P, 4)} mol/l PABA) and then falls, as the complex precipitates.`) : null),
+        h('div', { class: 'card' }, h('h3', {}, 'Result'), an && an.f ? h('div', {}, h('p', {}, `Intrinsic solubility of PABA S₀ = ${fmt(an.s0, 4)} mol/l. Slope of the rising part = ${fmt(an.f.m, 3)} (r² = ${fmt(an.f.r2, 4)}).`), h('p', {}, h('b', {}, `K = slope / (S₀ (1 − slope)) = ${fmt(an.K1, 1)} l/mol`), `; mean of point-by-point values (1:1 model) = ${fmt(an.Kmean, 1)} l/mol.`), h('p', {}, `Consistency of K: spread across points is ${fmt(an.cv11 * 100, 1)} % if the complex is 1:1, and ${fmt(an.cv12 * 100, 0)} % if it is 1:2 (caffeine:PABA). The model that gives a constant K is the right one, so the donor–acceptor ratio is ${an.ratio}.`),
+          VL.check({ label: 'Stability constant K (l/mol)', tol: 0.08, expected: () => an.K1, unit: 'l/mol', working: 'Fit a straight line to the rising part. K = slope / (S₀ (1 − slope)), where S₀ is the PABA concentration with no caffeine.' }), VL.check({ label: 'Slope of the rising line', tol: 0, abs: 0.03, expected: () => an.f.m, working: 'Slope = Δ[PABA] / Δ[caffeine] over the rising part (before the peak).' })) : h('p', { class: 'muted' }, 'Needs at least six flasks including the caffeine-free flask, with at least three on the rising side.')));
+      VL.graph(g, { xlabel: 'Caffeine, total (mol/l)', ylabel: 'PABA dissolved (mol/l)', xmin: 0, ymin: 0, series: [{ name: 'PABA', pts: r.map(x => [x.C, x.P]), line: true }], lines: an && an.f ? [{ name: 'Rising-part fit', pts: [[0, an.f.c], [r[an.pk].C, an.f.m * r[an.pk].C + an.f.c]], dashed: true, color: 'var(--teal)' }] : [] });
+    };
+    ctx.reportFn = () => { const r = rows(), an = analyse(r); if (!r.length) return {}; return { obs: VL.table(['Caffeine (mol/l)', 'NaOH (ml)', 'PABA (mol/l)'], r.map(x => [fmt(x.C, 3), fmt(x.V, 2), fmt(x.P, 4)])), calc: '<p>PABA = 0.025 × V / 10. For the rising part: [complex] = S − S₀; [caffeine free] = C − [complex]; K = [complex] / (S₀ [caffeine free]) = slope / (S₀ (1 − slope)).</p>', result: an && an.f ? `<p>S₀ = ${fmt(an.s0, 4)} mol/l. Stability constant K = ${fmt(an.K1, 1)} l/mol. Donor–acceptor (caffeine : PABA) ratio = ${an.ratio}.</p>` : '' }; };
+  }
+});
+
+/* Experiment 11: Cupric-glycine complex by pH titration */
+VL.register({
+  id: 'exp11', no: 11, title: 'Cupric–glycine complex', sub: 'n̄, stability constant β and ligand ratio by pH titration', topic: ['Chelation', 'Potentiometry', 'Stability constant'],
+  aim: 'Determination of the stability constant and donor–acceptor ratio of the cupric–glycine complex by the pH titration method.',
+  reference: 'Subramanyam CVS. Laboratory Manual of Physical Pharmaceutics, Vallabh Prakashan, 2008: 109–113.',
+  theory: `<p>A chelate is a metal ion complex in which one ligand supplies two or more groups to the metal. Glycine binds cupric ions through its amino nitrogen and carboxylate oxygen. Chelation is useful for improving drug stability, softening hard water, drug analysis and preventing blood coagulation.</p>
+  <div class="eq">Cu²⁺ + 2 NH₃⁺CH₂COO⁻ ⇌ Cu(NH₂CH₂COO)₂ + 2 H⁺</div>
+  <p>Two protons are released per complex formed, so the pH of the complex solution is lower than that of glycine alone at the same NaOH volume. The <b>horizontal distance</b> Δ between the two titration curves at a fixed pH is the extra alkali used by complexation, so it equals the ligand bound.</p>
+  <div class="eq">n̄ = ligand bound / total metal = (Δ × N<sub>NaOH</sub>) / (mmol Cu²⁺ taken)<br>p[A] = pK<sub>a</sub> − pH − log ([HA]<sub>initial</sub> − [NaOH]<sub>Δ</sub>)<br>p[A] = ½ log β at n̄ = 1</div>
+  <p>Here [HA]<sub>initial</sub> is the glycine concentration in the beaker at that point, [NaOH]<sub>Δ</sub> is the ligand bound in mol/l, and pK<sub>a</sub> of glycine is 9.6. The maximum n̄ is the number of glycine molecules per Cu²⁺, the donor–acceptor ratio.</p>
+  <div class="note">The glycine curve starts at about pH 6, so below that the glycine solution cannot be read at a given pH. This lab takes V = 0 for the glycine curve there, which introduces under 0.3 ml of error at pH 4. The manual’s example of “sudden pH rise between 5 and 6 ml” is reproduced by this system.</div>`,
+  chemicals: ['Distilled water', 'Glycine', 'Cupric chloride', '0.25 N sodium hydroxide', 'Buffer tablets pH 4, 7 and 9.4'],
+  apparatus: ['Volumetric flasks', 'Pipette', 'Burette', 'pH meter', '500 ml beakers'],
+  steps: ['Prepare glycine solution (3.34×10⁻² mol/l): 250 mg in 100 ml. Prepare complex solution: 250 mg glycine + 160 mg CuCl₂ in 100 ml (glycine 3.34×10⁻², Cu²⁺ 9.45×10⁻³ mol/l).', 'Calibrate the pH meter with buffers (4, 7, 9.4).', 'Put 75 ml of glycine solution in a 500 ml beaker, measure pH, then add 0.25 N NaOH in 1 ml steps and record pH after each.', 'Do the same with 75 ml of complex solution as a preliminary run, to find where pH rises suddenly.', 'Repeat with a fresh 75 ml of complex solution: 1 ml steps to 5 ml, then 0.2 ml steps through the sudden rise (5, 5.2, 5.4 …), then 1 ml steps.', 'Plot pH (y) against NaOH volume (x) for glycine and the complex. Calculate n̄, p[A] and β.'],
+  viva: {
+    A: [['Which metal ion is used in this experiment?', 'Cupric ion, Cu²⁺ (from cupric chloride).'], ['Which ligand is used to form the complex with Cu²⁺?', 'Glycine.'], ['Which method is used for determination?', 'pH titration (potentiometric, Bjerrum–Calvin method).'], ['What is the principle of this experiment?', 'Complexation releases H⁺, so the complex titration curve lies below the glycine curve, and the horizontal gap measures ligand bound.'], ['What is the type of complex formed between Cu²⁺ and glycine?', 'A chelate (five-membered rings through N and O), with two glycinate ligands per copper.']],
+    B: [['What does the stability constant (K) represent?', 'How strongly the ligand is held by the metal: a larger value means a more stable complex.'], ['What is plotted to determine the stability constant graphically?', 'n̄ against p[A] (the formation curve); p[A] at n̄ = 1 gives ½ log β.'], ['What acts as the donor atom in glycine?', 'The amino nitrogen (lone pair) and the carboxylate oxygen.'], ['What is the likely donor–acceptor ratio in the Cu–glycine complex?', '2:1 (two glycine per Cu²⁺), giving a maximum n̄ of 2.'], ['What instrument is used to measure pH during titration?', 'A pH meter with a glass electrode.']]
+  },
+  build(ctx) {
+    const { h, fmt } = VL;
+    const Ka = Math.pow(10, -9.6), K1c = Math.pow(10, 2.35), b1 = Math.pow(10, 8.6 + ctx.noise(0.03)), b2 = Math.pow(10, 15.5 + ctx.noise(0.04));
+    const LT = 0.0334, CuT = 0.00945, V0 = 75, N = 0.25;
+    const bis = (f, lo, hi) => VL.bisect(f, lo, hi, 70);
+    function Vof(pH, cu) { const H = Math.pow(10, -pH), OH = 1e-14 / H; let V = 0; for (let it = 0; it < 40; it++) { const f = V0 / (V0 + V), L = LT * f, M = cu ? CuT * f : 0; const g = lA => { const A = Math.pow(10, lA), HA = H * A / Ka, H2A = H * HA * K1c, den = 1 + b1 * A + b2 * A * A; return A + HA + H2A + M * (b1 * A + 2 * b2 * A * A) / den - L; }; const A = Math.pow(10, bis(g, -20, 0)), HA = H * A / Ka, H2A = H * HA * K1c, den = 1 + b1 * A + b2 * A * A, Cu = M / den, CuA = Cu * b1 * A; const Na = A + OH + 2 * M - H - 2 * Cu - CuA - H2A; const Vn = V0 * Na / (N - Na); if (Math.abs(Vn - V) < 1e-7) { V = Vn; break; } V = Vn; } return V; }
+    const pHof = (V, cu) => bis(p => Vof(p, cu) - V, 1.2, 12.9);
+    const B = ctx.data.B = { gly: { name: 'Glycine solution', cu: false, rows: [], V: 0 }, pre: { name: 'Complex, preliminary', cu: true, rows: [], V: 0 }, fin: { name: 'Complex, final', cu: true, rows: [], V: 0 } };
+    let cur = 'gly';
+    const meter = VL.phmeter(ctx.bench, { rnd: ctx.rnd, offset: ctx.rnd() < 0.5 ? 0.28 : -0.22 });
+    const msg = h('div', { class: 'msg' }), tot = h('div', { class: 'readout' }), seg = h('div', { class: 'seg' });
+    const dv = h('input', { id: 'dv11', class: 'inp', type: 'number', step: '0.1', min: '0.1', value: '1', 'aria-label': 'Volume of NaOH (ml)' });
+    function read(add) {
+      const b = B[cur];
+      if (!meter.calibrated) { msg.className = 'msg bad'; msg.textContent = 'Calibrate the pH meter with two buffers first.'; return; }
+      if (add === 0 && b.rows.length) { msg.className = 'msg warn'; msg.textContent = 'Initial pH already recorded.'; return; }
+      if (add > 0 && !b.rows.length) { msg.className = 'msg warn'; msg.textContent = 'Record the starting pH of the beaker first.'; return; }
+      if (add !== 0 && !(add > 0)) { msg.className = 'msg warn'; msg.textContent = 'Enter a positive volume.'; return; }
+      if (b.V + add > 15.001) { msg.className = 'msg warn'; msg.textContent = 'The burette limit for this study is 15 ml.'; return; }
+      b.V = Math.round((b.V + add) * 100) / 100; const p = meter.show(pHof(b.V, b.cu)); b.rows.push({ V: b.V, pH: p });
+      msg.className = 'msg ok'; msg.textContent = `${b.name}: V = ${fmt(b.V, 2)} ml, pH = ${fmt(p, 2)}`; paint(); ctx.refresh(); if (B.gly.rows.length >= 8 && B.fin.rows.length >= 12) ctx.done();
+    }
+    const q = d => h('button', { class: 'btn', onclick: () => read(d) }, `+${d} ml`);
+    function paint() {
+      const b = B[cur];
+      seg.replaceChildren(...Object.keys(B).map(k => h('button', { class: 'btn', 'aria-pressed': String(cur === k), onclick: () => { cur = k; msg.textContent = ''; paint(); } }, B[k].name + (B[k].rows.length ? ` (${B[k].rows.length})` : ''))));
+      tot.innerHTML = `${fmt(b.V, 2)}<small> ml NaOH in 75 ml ${b.cu ? 'complex' : 'glycine'}</small>`;
+    }
+    ctx.bench.append(h('div', { class: 'card' }, h('h3', {}, 'Three beakers of 75 ml'), h('p', { class: 'muted' }, 'Run glycine first. For the complex, use the preliminary run to find the sudden pH rise, then a fresh beaker for the final readings with small steps through the rise. For a closer log \u03b2, also use 0.5 ml steps while the pH is between 3 and 5.'), seg, tot,
+      h('div', { class: 'seg' }, h('button', { class: 'btn', onclick: () => read(0) }, 'Measure starting pH'), q(1), q(0.5), q(0.2)),
+      h('div', { class: 'row-inputs', style: { marginTop: '10px' } }, h('label', { for: 'dv11' }, 'Custom volume (ml)', dv), h('button', { class: 'btn', onclick: () => read(parseFloat(dv.value)) }, 'Add NaOH and read pH'), h('button', { class: 'btn', onclick: () => { const b = B[cur]; b.rows = []; b.V = 0; msg.className = 'msg'; msg.textContent = 'Fresh 75 ml beaker ready.'; paint(); ctx.refresh(); } }, 'New beaker')), msg));
+    paint();
+
+    const interp = (rows, pH, isGly) => {
+      const r = rows.slice().sort((a, b) => a.pH - b.pH).filter((x, i, a) => !i || x.pH > a[i - 1].pH + 1e-9);
+      if (!r.length) return null; if (pH < r[0].pH) return isGly ? 0 : null; if (pH > r[r.length - 1].pH) return null; if (r.length < 2) return r[0].V;
+      const n = r.length, x = r.map(q => q.pH), y = r.map(q => q.V), d = [], m = [];
+      for (let i = 0; i < n - 1; i++) d.push((y[i + 1] - y[i]) / (x[i + 1] - x[i]));
+      m.push(d[0]); for (let i = 1; i < n - 1; i++) m.push(d[i - 1] * d[i] <= 0 ? 0 : (d[i - 1] + d[i]) / 2); m.push(d[n - 2]);
+      for (let i = 0; i < n - 1; i++) { if (d[i] === 0) { m[i] = 0; m[i + 1] = 0; continue; } const a = m[i] / d[i], b = m[i + 1] / d[i], t = a * a + b * b; if (t > 9) { const k = 3 / Math.sqrt(t); m[i] = k * a * d[i]; m[i + 1] = k * b * d[i]; } }
+      let i = 0; while (i < n - 2 && pH > x[i + 1]) i++;
+      const hh = x[i + 1] - x[i], t = (pH - x[i]) / hh, t2 = t * t, t3 = t2 * t;
+      return (2 * t3 - 3 * t2 + 1) * y[i] + (t3 - 2 * t2 + t) * hh * m[i] + (-2 * t3 + 3 * t2) * y[i + 1] + (t3 - t2) * hh * m[i + 1];
+    };
+    const cplx = () => B.fin.rows.length >= 8 ? B.fin.rows : (B.pre.rows.length >= 6 ? B.pre.rows : []);
+    const at = pH => { if (B.gly.rows.length < 5) return null; const cr = cplx(); if (!cr.length) return null; const Vg = interp(B.gly.rows, pH, true), Vc = interp(cr, pH, false); if (Vg == null || Vc == null) return null; const d = Vc - Vg; if (d <= 0.001) return null; const n = N * d / (CuT * V0), free = (LT * V0 - N * d) / (V0 + Vc); if (free <= 0) return null; return { pH, Vg, Vc, d, n, pA: 9.6 - pH - Math.log10(free) }; };
+    const grid = () => { const o = []; for (let p = 3; p <= 9.01; p += 0.5) { const r = at(p); if (r) o.push(r); } return o; };
+    const beta = g => { const c = g.filter(x => x.n > 0.3 && x.n < 1.9).sort((a, b) => Math.abs(a.n - 1) - Math.abs(b.n - 1)).slice(0, 4); if (c.length < 2) return null; const f = VL.linfit(c.map(x => [x.n, x.pA])); const pA1 = f.m + f.c; return { pA1, logb: 2 * pA1, f }; };
+    const selId = 'ph-sel';
+    ctx.render = () => {
+      const g1 = h('div'), g2 = h('div'), g = grid(), bt = beta(g), maxN = g.length ? Math.max(...g.map(x => x.n)) : null;
+      const sel = h('select', { id: selId, class: 'inp', 'aria-label': 'pH for n and p[A]' }, [4, 5, 6, 7, 8, 9].map(p => h('option', { value: p, selected: p === 4 }, 'pH ' + p)));
+      const sec = (b) => b.rows.length ? VL.table(['V NaOH (ml)', 'pH'], b.rows.map(x => [fmt(x.V, 2), fmt(x.pH, 2)])) : h('p', { class: 'muted' }, 'No readings.');
+      ctx.results.replaceChildren(
+        h('div', { class: 'cols' }, h('div', { class: 'card' }, h('h3', {}, 'Glycine solution'), sec(B.gly)), h('div', { class: 'card' }, h('h3', {}, 'Complex, preliminary'), sec(B.pre)), h('div', { class: 'card' }, h('h3', {}, 'Complex, final'), sec(B.fin))),
+        h('div', { class: 'card' }, h('h3', {}, 'Titration curves'), g1, B.fin.rows.length + B.pre.rows.length ? h('p', { class: 'muted' }, 'The complex curve lies to the right of glycine at low pH; the gap is the ligand bound. The steep rise shows where the chelation is complete.') : null),
+        h('div', { class: 'card' }, h('h3', {}, 'n̄ and p[A] from the curves'), g.length ? VL.table(['pH', 'V glycine (ml)', 'V complex (ml)', 'Δ (ml)', 'n̄', 'p[A]'], g.map(x => [fmt(x.pH, 1), fmt(x.Vg, 2), fmt(x.Vc, 2), fmt(x.d, 2), fmt(x.n, 2), fmt(x.pA, 2)])) : h('p', { class: 'muted' }, 'Needs about five glycine readings and the complex curve over pH 3 to 9.'), g.length ? h('p', {}, `Maximum n̄ = ${fmt(maxN, 2)}, so about ${Math.round(maxN)} glycine per Cu²⁺: donor–acceptor ratio ${Math.round(maxN)}:1.`) : null, g2),
+        h('div', { class: 'card' }, h('h3', {}, 'Conclusion'), g.length ? h('div', {}, h('p', {}, `n at pH 4 = ${at(4) ? fmt(at(4).n, 2) : '–'}; n at pH 8 = ${at(8) ? fmt(at(8).n, 2) : '–'}. p[A] at pH 4 = ${at(4) ? fmt(at(4).pA, 2) : '–'}; at pH 8 = ${at(8) ? fmt(at(8).pA, 2) : '–'}.`),
+          bt ? h('p', {}, h('b', {}, `½ log β = p[A] at n̄ = 1 = ${fmt(bt.pA1, 2)}, so log β = ${fmt(bt.logb, 2)}`), ` (β ≈ ${Math.pow(10, bt.logb).toExponential(2)}). Read by interpolating p[A] to n̄ = 1 on the formation curve. The literature value for Cu–glycine is about log β₂ = 15.5.`) : null,
+          h('p', { class: 'muted' }, 'The relation p[A] = ½ log β holds exactly only where n̄ = 1. Values of 10^(2 p[A]) at other pH values, such as pH 4 and 8 in the manual table, are only approximate.'),
+          h('div', { class: 'row-inputs' }, h('label', { for: selId }, 'Check at', sel)),
+          VL.check({ label: 'n̄ at the chosen pH', tol: 0, abs: 0.1, expected: () => { const r = at(+sel.value); return r && r.n; }, working: 'Δ = V(complex) − V(glycine) at that pH.<br>n̄ = Δ × 0.25 / (75 × 9.45×10⁻³) = Δ × 0.25 / 0.709' }),
+          VL.check({ label: 'p[A] at the chosen pH', tol: 0, abs: 0.1, expected: () => { const r = at(+sel.value); return r && r.pA; }, working: 'free HA = (3.34×10⁻² × 75 − 0.25 Δ) / (75 + V<sub>complex</sub>)<br>p[A] = 9.6 − pH − log(free HA)' }),
+          VL.check({ label: 'log β (at n̄ = 1)', tol: 0, abs: 0.3, expected: () => bt && bt.logb, working: 'Plot n̄ against p[A], read p[A] where n̄ = 1, then log β = 2 p[A].' })) : h('p', { class: 'muted' }, 'Complete the curves first.')));
+      const cp = [{ name: 'Glycine', pts: B.gly.rows.map(x => [x.V, x.pH]), line: true, color: 'var(--teal)' }, { name: 'Complex (preliminary)', pts: B.pre.rows.map(x => [x.V, x.pH]), line: true, color: 'var(--warn)', r: 3 }, { name: 'Complex (final)', pts: B.fin.rows.map(x => [x.V, x.pH]), line: true, color: 'var(--accent)' }].filter(s => s.pts.length);
+      VL.graph(g1, { xlabel: 'Volume of 0.25 N NaOH (ml)', ylabel: 'pH', xmin: 0, ymin: 2, series: cp });
+      VL.graph(g2, { xlabel: 'p[A]', ylabel: 'n̄ (formation curve)', ymin: 0, ymax: 2, series: [{ name: 'n̄', pts: g.map(x => [x.pA, x.n]), line: true }], marks: bt ? [{ x: bt.pA1, y: 1, label: `p[A] = ${fmt(bt.pA1, 2)}` }] : [] });
+    };
+    ctx.reportFn = () => { const g = grid(), bt = beta(g); if (!B.gly.rows.length && !cplx().length) return {}; const mx = g.length ? Math.max(...g.map(x => x.n)) : null; const col = b => b.rows.map(x => fmt(x.V, 1) + ': ' + fmt(x.pH, 2)).join(' | ') || '–'; return { obs: h('div', {}, h('p', {}, h('b', {}, 'Glycine (V ml: pH): '), col(B.gly)), h('p', {}, h('b', {}, 'Complex, preliminary: '), col(B.pre)), h('p', {}, h('b', {}, 'Complex, final: '), col(B.fin))), calc: g.length ? VL.table(['pH', 'Δ (ml)', 'n̄', 'p[A]'], g.map(x => [fmt(x.pH, 1), fmt(x.d, 2), fmt(x.n, 2), fmt(x.pA, 2)])) : '', result: g.length ? `<p>n at pH 4 = ${at(4) ? fmt(at(4).n, 2) : '–'}; at pH 8 = ${at(8) ? fmt(at(8).n, 2) : '–'}. Maximum n̄ = ${fmt(mx, 2)}, so the donor–acceptor ratio (glycine : Cu²⁺) is ${Math.round(mx)}:1.${bt ? ` At n̄ = 1, p[A] = ${fmt(bt.pA1, 2)}, so log β = ${fmt(bt.logb, 2)}.` : ''}</p>` : '' }; };
+  }
+});
+
+
+VL.start();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }
+</script>
+</body>
+</html>
